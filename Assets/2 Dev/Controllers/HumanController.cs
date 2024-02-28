@@ -36,22 +36,42 @@ public class HumanController : Controller
 
     #region Static Functions
 
-    public static void HumanYokaiInput(Yokai yokai, Action onInputValid)
+    public static void CancelYokaiInput()
+    {
+        if (_humanPlayer1 != null && _humanPlayer1._isWaitingForInput && _humanPlayer1._hasYokai)
+        {
+            _humanPlayer1._hasYokai = false;
+            _humanPlayer1._input.yokai.Deselect();
+            _humanPlayer1._input.yokai = null;
+            GameManager.DeselectYokai();
+        }
+        else if (_humanPlayer2 != null && _humanPlayer2._isWaitingForInput && _humanPlayer2._hasYokai)
+        {
+            _humanPlayer2._hasYokai = false;
+            _humanPlayer2._input.yokai.Deselect();
+            _humanPlayer2._input.yokai = null;
+            GameManager.DeselectYokai();
+        }
+    }
+
+    public static void YokaiInput(Yokai yokai, Action onInputValid)
     {
         if (yokai.PlayerIndex == 1 && _humanPlayer1 != null && _humanPlayer1._isWaitingForInput)
         {
             _humanPlayer1._input.yokai = yokai;
             onInputValid?.Invoke();
             _humanPlayer1._hasYokai = true;
+            GameManager.SelectYokai();
         }
         else if (yokai.PlayerIndex == 2 && _humanPlayer2 != null && _humanPlayer2._isWaitingForInput)
         {
             _humanPlayer2._input.yokai = yokai;
             onInputValid?.Invoke();
             _humanPlayer2._hasYokai = true;
+            GameManager.SelectYokai();
         }
     }
-    public static void HumanBoardPieceInput(BoardPiece boardPiece, Action onInputValid)
+    public static void BoardPieceInput(BoardPiece boardPiece, Action onInputValid)
     {
         if (_humanPlayer1 != null && _humanPlayer1._isWaitingForInput && _humanPlayer1._hasYokai)
         {

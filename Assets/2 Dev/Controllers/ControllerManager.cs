@@ -6,9 +6,9 @@ public class ControllerManager : MonoBehaviour
 {
     public enum Mode
     {
-        HUMANvHUMAN = 0,
-        HUMANvAI = 1,
-        AIvAI = 2
+        HUMAN_v_HUMAN = 0,
+        HUMAN_v_AI = 1,
+        AI_v_AI = 2
     }
 
     #region DDOL Singleton
@@ -59,13 +59,13 @@ public class ControllerManager : MonoBehaviour
     {
         switch (mode)
         {
-            case Mode.HUMANvHUMAN:
+            case Mode.HUMAN_v_HUMAN:
                 CreateHumanControllers();
                 return;
-            case Mode.HUMANvAI:
+            case Mode.HUMAN_v_AI:
                 CreateHumanAndAIControllers();
                 return;
-            case Mode.AIvAI:
+            case Mode.AI_v_AI:
                 CreateAIControllers();
                 return;
         }
@@ -92,8 +92,9 @@ public class ControllerManager : MonoBehaviour
         human.name = "Human Controller";
         ai.name = "AI Controller";
 
-        Controller1 = human;
-        Controller2 = ai;
+        bool humanFirst = Random.value > 0.5f;
+        Controller1 = humanFirst ? human : ai;
+        Controller2 = humanFirst ? ai : human;
 
         PlayerManager.AssignPlayerControllers(human, ai);
     }

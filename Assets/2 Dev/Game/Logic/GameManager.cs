@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         OnGameStart?.Invoke();
+
+        SetTurn(1);
     }
 
     #endregion
@@ -74,10 +76,24 @@ public class GameManager : MonoBehaviour
         CurrentPlayer = playerIndex;
         _nextTurn = CurrentPlayer == 1 ? 2 : 1;
 
+        bool currentPlayerHuman = PlayerManager.CurrentPlayer.IsHuman;
+        EnablePhysicInteractions(currentPlayerHuman);
+        if (currentPlayerHuman)
+        {
+            SetYokaiLayer();
+        }
+
         OnSetTurn?.Invoke(CurrentPlayer);
     }
     
 
+    public static void PlayerInput(Player.Input input)
+    {
+        if (Exist())
+        {
+            Instance.OnPlayerInput(input);
+        }
+    }
     private void OnPlayerInput(Player.Input input)
     {
         // Deactivate input
@@ -93,10 +109,23 @@ public class GameManager : MonoBehaviour
     private void ChangeSide()
     {
         // Rotate camera
-        RotateCamera();
+        RotateCamera(ChangeTurn);
+    }
 
-        // On Complete
-        ChangeTurn();
+
+    public static void SelectYokai()
+    {
+        if (Exist())
+        {
+            Instance.SetBoardLayer();
+        }
+    }
+    public static void DeselectYokai()
+    {
+        if (Exist())
+        {
+            Instance.SetYokaiLayer();
+        }
     }
 
     #endregion
@@ -129,10 +158,24 @@ public class GameManager : MonoBehaviour
     }
 
     private Vector3 _currentCameraRotation;
-    private void RotateCamera()
+    private void RotateCamera(Action onComplete)
     {
         _currentCameraRotation = new Vector3(0, 0, _currentCameraRotation.z == 0 ? 180 : 0);
         mainCamera.transform.DORotate(_currentCameraRotation, cameraRotationDuration);
+
+        DOVirtual.DelayedCall(cameraRotationDuration, () => onComplete?.Invoke());
+    }
+
+    #endregion
+
+    #region Utility
+
+    private static bool Exist()
+    {
+        if (Instance != null) return true;
+
+        Debug.LogError("No GameManager found in the scene");
+        return false;
     }
 
     #endregion

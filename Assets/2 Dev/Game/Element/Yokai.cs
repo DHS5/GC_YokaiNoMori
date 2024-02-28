@@ -35,17 +35,18 @@ public class Yokai : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        HumanController.HumanYokaiInput(this, OnSelected);
+        if (GameManager.CurrentPlayer == PlayerIndex)
+            HumanController.YokaiInput(this, OnSelected);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("Hover begin");
+        //Debug.Log("Hover begin");
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("Hover end");
+        //Debug.Log("Hover end");
     }
 
     #endregion
@@ -54,7 +55,11 @@ public class Yokai : MonoBehaviour,
 
     private void OnSelected()
     {
-        Debug.Log("On selected");
+        Debug.Log("On selected " + this, this);
+    }
+    public void Deselect()
+    {
+        Debug.Log("Deselected " + this, this);
     }
 
     #endregion

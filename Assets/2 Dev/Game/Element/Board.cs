@@ -220,7 +220,8 @@ public class Board : MonoBehaviour
     }
     private void MakeMove(Player.Input input, Action onComplete)
     {
-
+        // TODO
+        onComplete?.Invoke();
     }
 
 

@@ -11,6 +11,8 @@ public abstract class Controller : MonoBehaviour
     public void AssignPlayer(Player _player)
     {
         player = _player;
+
+        OnAssignPlayer();
     }
 
     protected abstract void OnAssignPlayer();
@@ -44,7 +46,7 @@ public abstract class Controller : MonoBehaviour
 
     protected void SendInput(Player.Input input)
     {
-        // TODO
+        GameManager.PlayerInput(input);
     }
 
     #endregion

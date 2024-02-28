@@ -11,7 +11,6 @@ public class BoardPiece : MonoBehaviour,
         NORMAL = 0,
         VALID = 1,
         UNVALID = 2,
-        HOVERED = 3,
     }
 
     #region Global Members
@@ -30,9 +29,13 @@ public class BoardPiece : MonoBehaviour,
 
     #region Appearance Methods
 
-    public void SetState(State state)
+    private State _currentState = State.NORMAL;
+    public void SetState(State state, bool hovered = false)
     {
-        if (spriteRenderer != null && data != null) spriteRenderer.color = data.GetColor(state);
+        if (spriteRenderer != null && data != null)
+        {
+            spriteRenderer.color = hovered ? data.HoveredColor : data.GetColor(state);
+        }
     }
 
     #endregion
@@ -50,17 +53,20 @@ public class BoardPiece : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        HumanController.HumanBoardPieceInput(this, OnSelected);
+        HumanController.BoardPieceInput(this, OnSelected);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        SetState(State.HOVERED);
+        if (_currentState == State.VALID)
+        {
+            SetState(_currentState, true);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        SetState(State.NORMAL);
+        SetState(_currentState, false);
     }
 
     #endregion
@@ -69,7 +75,7 @@ public class BoardPiece : MonoBehaviour,
 
     private void OnSelected()
     {
-        Debug.Log("On selected");
+        Debug.Log("On selected " + this, this);
     }
 
     #endregion

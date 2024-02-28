@@ -21,9 +21,8 @@ public class BoardPieceData : ScriptableObject
                  return validColor;
             case BoardPiece.State.UNVALID:
                 return unvalidColor;
-            case BoardPiece.State.HOVERED:
-                return hoveredColor;
         }
         return Color.white;
     }
+    public Color HoveredColor => hoveredColor;
 }
