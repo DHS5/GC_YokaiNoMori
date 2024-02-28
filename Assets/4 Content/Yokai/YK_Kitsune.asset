@@ -10,11 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e635e5eb64fcae546a8b05b057219503, type: 3}
-  m_Name: YK_1
+  m_Name: YK_Kitsune
   m_EditorClassIdentifier: 
+  index: 5
   displayName: 
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: a4b85dd7648198248a67c6c6c60f76cb, type: 3}
+  startPosition: {x: 0, y: 0}
   baseMovementGrid:
+    north: 0
+    northEast: 1
+    northWest: 1
+    east: 0
+    west: 0
+    south: 0
+    southEast: 1
+    southWest: 1
+    validDeltas:
+    - {x: 1, y: 1}
+    - {x: -1, y: 1}
+    - {x: 1, y: -1}
+    - {x: -1, y: -1}
+  hasSecondFace: 0
+  secondMovementGrid:
     north: 0
     northEast: 0
     northWest: 0

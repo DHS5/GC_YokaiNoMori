@@ -18,6 +18,7 @@ public class YokaiData : ScriptableObject
     [Space(15f)]
 
     [SerializeField] private bool hasSecondFace;
+    [SerializeField] private Sprite secondSprite;
     [Space(5f)]
     [SerializeField] private YokaiMovementGrid secondMovementGrid;
 

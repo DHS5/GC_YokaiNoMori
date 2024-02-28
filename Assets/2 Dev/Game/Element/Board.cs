@@ -1,9 +1,28 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Board : MonoBehaviour
 {
+    #region Singleton
+
+    private static Board Instance { get; set; }
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
+        InitBoard();
+    }
+
+    #endregion
+
     public enum Mode
     {
         F3x4 = 0,
@@ -62,11 +81,19 @@ public class Board : MonoBehaviour
     [Header("Board Elements")]
     [SerializeField] private Mode mode;
     [SerializeField] private BoardStructure4x3 structure;
+    [SerializeField] private Transform player1Cemetery;
+    [SerializeField] private Transform player2Cemetery;
+
+    [Space(10f)]
+
     [SerializeField] private Vector2 boardPieceSize = new Vector2(1,1);
     [SerializeField] private Vector2 boardPieceSpacing = new Vector2(0.25f,0.25f);
 
     [Header("Yokais")]
     [SerializeField] private List<Yokai> yokaiList;
+
+    [Header("Animations")]
+    [SerializeField] private float yokaiMoveDuration = 1f;
 
     #endregion
 
@@ -80,7 +107,7 @@ public class Board : MonoBehaviour
             {
                 structure.Get(column, line).transform.position 
                     = new Vector3((column - 1) * (boardPieceSize.x + boardPieceSpacing.x),
-                    boardPieceSize.y / 2 + line * (boardPieceSize.y + boardPieceSpacing.y),
+                    (line - 1.5f) * (boardPieceSize.y + boardPieceSpacing.y),
                     0);
             }
         }
@@ -95,6 +122,15 @@ public class Board : MonoBehaviour
                 structure.Get(column, line).SetPosition(new Vector2Int(column, line));
             }
         }
+    }
+
+    private BoardPiece GetBoardPiece(Vector2Int position)
+    {
+        return structure.Get(position.x, position.y);
+    }
+    private BoardPiece GetBoardPiece(int posX, int posY)
+    {
+        return structure.Get(posX, posY);
     }
 
     #endregion
@@ -127,12 +163,14 @@ public class Board : MonoBehaviour
         Vector2Int pos;
         foreach (var yokai in yokaiList)
         {
-            if (_yokaiDico.TryAdd(yokai.YokaiIndex, yokai))
+            if (!_yokaiDico.TryAdd(yokai.YokaiIndex, yokai))
             {
-                Debug.LogError("Yokai index redundance");
+                Debug.LogError("Yokai index redundance : " + yokai.YokaiIndex);
             }
             pos = GetCoords(yokai.PlayerIndex, yokai.StartPosition);
             _board[pos.x, pos.y] = yokai.YokaiIndex;
+
+            MoveYokaiToPosition(yokai, pos);
         }
     }
 
@@ -158,8 +196,83 @@ public class Board : MonoBehaviour
         return new Vector2Int(_format.x - 1 - position.x, _format.y - 1 - position.y);
     }
 
+    private Vector3 GetYokaiRotation(int playerIndex)
+    {
+        return playerIndex == 1 ? Vector3.zero : new Vector3(0, 0, 180);
+    }
+    
+    private Transform GetYokaiCemetery(int playerIndex)
+    {
+        return playerIndex == 1 ? player1Cemetery : player2Cemetery;
+    }
+
     #endregion
 
+
+    #region Board Modification
+
+    public static void TryMakeMove(Player.Input input, Action onComplete)
+    {
+        if (Exist())
+        {
+            Instance.MakeMove(input, onComplete);
+        }
+    }
+    private void MakeMove(Player.Input input, Action onComplete)
+    {
+
+    }
+
+
+    public static bool IsMoveValid(Vector2Int currentPosition, Vector2Int delta)
+    {
+        Vector2Int newPosition = new Vector2Int(currentPosition.x + delta.x, currentPosition.y + delta.y);
+        return IsPositionValid(newPosition);
+    }
+    public static bool IsPositionValid(Vector2Int position)
+    {
+        if (Exist()) return position.x >= 0 && position.x < Instance._format.x && position.y >= 0 && position.y < Instance._format.y;
+        return false;
+    }
+
+    #endregion
+
+    #region Board Animation
+
+    private void MoveYokaiToPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
+    {
+        MoveYokaiToAnchor(yokai, GetBoardPiece(newPosition).transform, onComplete);
+    }
+    private void MoveYokaiToCemetery(Yokai yokai, Action onComplete = null)
+    {
+        MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex), onComplete);
+    }
+
+    private void MoveYokaiToAnchor(Yokai yokai, Transform anchor, Action onComplete = null)
+    {
+        yokai.transform.DOMove(anchor.position, yokaiMoveDuration);
+        yokai.transform.DORotate(GetYokaiRotation(yokai.PlayerIndex), yokaiMoveDuration);
+
+        if (onComplete != null)
+        {
+            DOVirtual.DelayedCall(yokaiMoveDuration, () => onComplete.Invoke());
+        }
+    }
+
+    #endregion
+
+
+    #region Utility
+
+    private static bool Exist()
+    {
+        if (Instance != null) return true;
+
+        Debug.LogError("No board found in the scene");
+        return false;
+    }
+
+    #endregion
 
     #region Editor
 

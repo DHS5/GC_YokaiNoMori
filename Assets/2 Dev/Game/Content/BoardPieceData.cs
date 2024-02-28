@@ -6,24 +6,24 @@ using UnityEngine;
 public class BoardPieceData : ScriptableObject
 {
     [Header("Sprites")]
-    [SerializeField] private Sprite normalSprite;
-    [SerializeField] private Sprite validSprite;
-    [SerializeField] private Sprite unvalidSprite;
-    [SerializeField] private Sprite hoveredSprite;
+    [SerializeField] private Color normalColor;
+    [SerializeField] private Color validColor;
+    [SerializeField] private Color unvalidColor;
+    [SerializeField] private Color hoveredColor;
 
-    public Sprite GetSprite(BoardPiece.State state)
+    public Color GetColor(BoardPiece.State state)
     {
         switch (state)
         {
             case BoardPiece.State.NORMAL:
-                return normalSprite;
+                return normalColor;
             case BoardPiece.State.VALID:
-                 return validSprite;
+                 return validColor;
             case BoardPiece.State.UNVALID:
-                return unvalidSprite;
+                return unvalidColor;
             case BoardPiece.State.HOVERED:
-                return hoveredSprite;
+                return hoveredColor;
         }
-        return null;
+        return Color.white;
     }
 }

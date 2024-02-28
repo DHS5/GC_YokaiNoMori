@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Board
+    uniqueID: 340862617
+    locked: 0
+  - name: Board Piece
+    uniqueID: 685971381
+    locked: 0
+  - name: Yokai
+    uniqueID: 2525488749
+    locked: 0

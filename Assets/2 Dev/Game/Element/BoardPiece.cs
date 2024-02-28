@@ -32,7 +32,7 @@ public class BoardPiece : MonoBehaviour,
 
     public void SetState(State state)
     {
-        spriteRenderer.sprite = data.GetSprite(state);
+        if (spriteRenderer != null && data != null) spriteRenderer.color = data.GetColor(state);
     }
 
     #endregion
@@ -60,7 +60,7 @@ public class BoardPiece : MonoBehaviour,
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("Hover end");
+        SetState(State.NORMAL);
     }
 
     #endregion
@@ -71,6 +71,20 @@ public class BoardPiece : MonoBehaviour,
     {
         Debug.Log("On selected");
     }
+
+    #endregion
+
+
+    #region Editor
+
+#if UNITY_EDITOR
+
+    private void OnValidate()
+    {
+        SetState(State.NORMAL);
+    }
+
+#endif
 
     #endregion
 }

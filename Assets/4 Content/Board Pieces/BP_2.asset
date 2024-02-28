@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 246dd0c9e366a0649a0e60256a6c2f17, type: 3}
+  m_Name: BP_2
+  m_EditorClassIdentifier: 
+  normalColor: {r: 1, g: 0.739833, b: 0.49411762, a: 1}
+  validColor: {r: 0.65017295, g: 0.990566, b: 0.41585082, a: 1}
+  unvalidColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
+  hoveredColor: {r: 0.18546164, g: 1, b: 0, a: 1}

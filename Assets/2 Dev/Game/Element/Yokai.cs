@@ -17,8 +17,17 @@ public class Yokai : MonoBehaviour,
 
     public int PlayerIndex => playerIndex;
 
-    public int YokaiIndex => playerIndex * data.Index;
+    public int YokaiIndex => (playerIndex - 1) + data.Index;
     public Vector2Int StartPosition => data.StartPosition;
+
+    #endregion
+
+    #region Core Behaviour
+
+    private void Start()
+    {
+        SetSprite();
+    }
 
     #endregion
 
@@ -47,6 +56,30 @@ public class Yokai : MonoBehaviour,
     {
         Debug.Log("On selected");
     }
+
+    #endregion
+
+
+    #region Appearance
+
+    private void SetSprite()
+    {
+        if (spriteRenderer != null && data != null) spriteRenderer.sprite = data.Sprite;
+    }
+
+    #endregion
+
+
+    #region Editor
+
+#if UNITY_EDITOR
+
+    private void OnValidate()
+    {
+        SetSprite();
+    }
+
+#endif
 
     #endregion
 }
