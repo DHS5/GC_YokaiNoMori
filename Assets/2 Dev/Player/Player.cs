@@ -28,4 +28,16 @@ public class Player : MonoBehaviour
     public bool IsPlaying => GameManager.CurrentPlayer == Index;
 
     #endregion
+
+    #region Controller
+
+    private Controller _controller;
+
+    public void AssignController(Controller controller)
+    {
+        _controller = controller;
+        _controller.AssignPlayer(this);
+    }
+
+    #endregion
 }

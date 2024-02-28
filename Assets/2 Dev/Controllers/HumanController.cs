@@ -7,7 +7,10 @@ public class HumanController : Controller
 {
     #region Core Behaviour
 
-
+    private void Start()
+    {
+        Register(this);
+    }
 
     #endregion
 
@@ -18,7 +21,7 @@ public class HumanController : Controller
 
     private static void Register(HumanController humanController)
     {
-        switch (humanController._player.Index)
+        switch (humanController.player.Index)
         {
             case 1: _humanPlayer1 = humanController; return;
             case 2: _humanPlayer2 = humanController; return;

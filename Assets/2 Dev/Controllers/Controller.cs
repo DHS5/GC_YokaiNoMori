@@ -4,9 +4,14 @@ using UnityEngine;
 
 public abstract class Controller : MonoBehaviour
 {
-    #region Global Members
+    #region Player
 
-    protected Player _player;
+    [SerializeField] protected Player player;
+
+    public void AssignPlayer(Player _player)
+    {
+        player = _player;
+    }
 
     #endregion
 
@@ -23,7 +28,7 @@ public abstract class Controller : MonoBehaviour
 
     private void CheckForTurn(int playerIndex)
     {
-        if (_player.Index == playerIndex)
+        if (player.Index == playerIndex)
         {
             PrepareInput();
         }

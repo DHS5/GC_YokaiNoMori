@@ -48,8 +48,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         OnGameStart?.Invoke();
-
-        SetBoardLayer();
     }
 
     #endregion
