@@ -151,15 +151,15 @@ public class GameManager : MonoBehaviour
     public static bool HasWinner(int[,] board, out int winner)
     {
         Vector2Int format = Board.GetFormat();
-        int boardLength0 = format.x;
-        int boardLength1 = format.y;
+        int formatX = format.x;
+        int formatY = format.y;
         
         // check first and last line for kings
         for (var step = 0; step <= 1; step++)
         {
-            var line = step == 0 ? boardLength1 - 1 : 0;
+            var line = step == 0 ? formatY - 1 : 0;
         
-            for (var j = 0; j < boardLength0; j++)
+            for (var j = 0; j < formatX; j++)
             {
                 var yokai = Board.GetYokaiByIndex(board[j, line]);
                 if (yokai == null || !yokai.IsKing) continue;
