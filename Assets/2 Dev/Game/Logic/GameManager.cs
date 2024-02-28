@@ -167,6 +167,8 @@ public class GameManager : MonoBehaviour
                         }
                     }
                 }
+                winner = yokai.PlayerIndex;
+                return true;
             }            
         }
     
