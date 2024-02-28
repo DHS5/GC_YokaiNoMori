@@ -186,6 +186,12 @@ public class Board : MonoBehaviour
         return null;
     }
 
+    public static Yokai GetYokaiByIndex(int index)
+    {
+        if (Exist()) return Instance._yokaiDico[index];
+        return null;
+    }
+
     private int GetYokaiIndexAtPosition(Vector2Int position)
     {
         return _board[position.x, position.y];
@@ -377,7 +383,11 @@ public class Board : MonoBehaviour
     }
     public static bool IsPositionValid(Vector2Int position)
     {
-        if (Exist()) return position.x >= 0 && position.x < Instance._format.x && position.y >= 0 && position.y < Instance._format.y;
+        return IsPositionValid(position.x, position.y);
+    }
+    public static bool IsPositionValid(int posX, int posY)
+    {
+        if (Exist()) return posX >= 0 && posX < Instance._format.x && posY >= 0 && posY < Instance._format.y;
         return false;
     }
     public static bool AreAround(Vector2Int position1, Vector2Int position2)

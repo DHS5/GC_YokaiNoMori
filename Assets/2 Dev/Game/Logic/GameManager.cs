@@ -154,12 +154,11 @@ public class GameManager : MonoBehaviour
         // check first and last line for kings
         for (var step = 0; step <= 1; step++)
         {
-            var line = step == 0 ? boardLength0 - 1 : 0;
+            var line = step == 0 ? boardLength1 - 1 : 0;
         
-            for (var j = 0; j < boardLength1; j++)
+            for (var j = 0; j < boardLength0; j++)
             {
-                var yokaiPos = new Vector2Int(line, j);
-                var yokai = Board.GetYokaiAtPosition(yokaiPos);
+                var yokai = Board.GetYokaiByIndex(board[j, line]);
                 if (yokai == null || !yokai.IsKing) continue;
                 
                 // check around the king if there is a piece of the other player that can reach the king
@@ -169,11 +168,10 @@ public class GameManager : MonoBehaviour
                     for (var k = -1; k <= 1; k++)
                     {
                         if (i == 0 && k == 0) continue;
-                        var position = new Vector2Int(line + i, j + k);
-                        if (!Board.IsPositionValid(position)) continue;
+                        if (!Board.IsPositionValid(j + k, line + i)) continue;
 
-                        var piece = Board.GetYokaiAtPosition(position);
-                        if (piece != null && piece.PlayerIndex != kingTeam && piece.CanEat(yokaiPos))
+                        var piece = Board.GetYokaiByIndex(board[j + k, line + i]);
+                        if (piece != null && piece.PlayerIndex != kingTeam && piece.CanEat(yokai.CurrentPosition))
                         {
                             // oops, the king is in danger
                             winner = piece.PlayerIndex;
