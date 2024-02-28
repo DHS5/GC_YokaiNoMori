@@ -637,7 +637,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &799385225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1597,7 +1597,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1705059570}
   - {fileID: 2042006628}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1846,14 +1845,14 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1001 &1705059569
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1486472470}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4324501057454889890, guid: 2c189f1b281714846bcfb7f62d03d87b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1904,11 +1903,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c189f1b281714846bcfb7f62d03d87b, type: 3}
---- !u!4 &1705059570 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4324501057454889890, guid: 2c189f1b281714846bcfb7f62d03d87b, type: 3}
-  m_PrefabInstance: {fileID: 1705059569}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1705059571 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4371221361378887023, guid: 2c189f1b281714846bcfb7f62d03d87b, type: 3}
@@ -2012,7 +2006,7 @@ GameObject:
   - component: {fileID: 2009400236}
   - component: {fileID: 2009400235}
   m_Layer: 5
-  m_Name: MainCanevas
+  m_Name: MainCaneva
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2302,4 +2296,5 @@ SceneRoots:
   - {fileID: 385936217}
   - {fileID: 2009400238}
   - {fileID: 1173938299}
+  - {fileID: 1705059569}
   - {fileID: 1486472470}
