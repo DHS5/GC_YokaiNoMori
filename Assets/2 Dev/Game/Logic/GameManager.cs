@@ -135,6 +135,41 @@ public class GameManager : MonoBehaviour
 
     public static bool HasWinner(int[,] board, out int winner)
     {
+        int boardLength0 = board.GetLength(0);
+        int boardLength1 = board.GetLength(1);
+        
+        // check first and last line for kings
+        for (var step = 0; step <= 1; step++)
+        {
+            var line = step == 0 ? boardLength0 - 1 : 0;
+        
+            for (var j = 0; j < boardLength1; j++)
+            {
+                var yokaiPos = new Vector2Int(line, j);
+                var yokai = Board.GetYokaiAtPosition(yokaiPos);
+                if (yokai == null || !yokai.IsKing) continue;
+                
+                // check around the king if there is a piece of the other player that can reach the king
+                var kingTeam = yokai.PlayerIndex;
+                for (var i = -1; i <= 1; i++)
+                {
+                    for (var k = -1; k <= 1; k++)
+                    {
+                        if (i == 0 && k == 0) continue;
+                        var position = new Vector2Int(line + i, j + k);
+                        if (!Board.IsPositionValid(position)) continue;
+
+                        var piece = Board.GetYokaiAtPosition(position);
+                        if (piece != null && piece.PlayerIndex != kingTeam && piece.CanEat(yokaiPos))
+                        {
+                            winner = piece.PlayerIndex;
+                            return true;
+                        }
+                    }
+                }
+            }            
+        }
+    
         winner = 0;
         return false;
     }
