@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -36,6 +37,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float cameraRotationDuration = 2f;
 
+
+    public static bool IsPlaying { get; private set; }
+
     #endregion
 
     #region Core Behaviour
@@ -49,6 +53,7 @@ public class GameManager : MonoBehaviour
     {
         OnGameStart?.Invoke();
 
+        IsPlaying = true;
         SetTurn(1);
     }
 
@@ -108,14 +113,15 @@ public class GameManager : MonoBehaviour
 
     private void CheckForWinner()
     {
+        if (!IsPlaying) return;
+
         if (HasWinner(Board.GetCurrentBoard(), out int winner))
         {
-            Debug.Log("Player " + winner + " WIN !");
+            Winner(winner);
+            return;
         }
-        else
-        {
-            ChangeSide();
-        }
+
+        ChangeSide();
     }
 
     private void ChangeSide()
@@ -234,6 +240,16 @@ public class GameManager : MonoBehaviour
             return playerIndex;
         }
         return 0;
+    }
+
+    #endregion
+
+    #region Victory
+
+    public static void Winner(int playerIndex)
+    {
+        Debug.Log("Player " + playerIndex + " WIN !");
+        IsPlaying = false;
     }
 
     #endregion

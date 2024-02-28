@@ -417,13 +417,18 @@ public class Board : MonoBehaviour
     {
         MoveYokaiToAnchor(yokai, GetBoardPiece(newPosition).transform, onComplete);
     }
-    private void MoveYokaiToCemetery(Yokai yokai, Action onComplete = null)
+    private void MoveYokaiToCemetery(Yokai yokai)
     {
         yokai.PlayerIndex = yokai.PlayerIndex == 1 ? 2 : 1;
 
         AddToCemetery(yokai);
         yokai.CurrentPosition = Vector2Int.down;
-        MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex), onComplete);
+        MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex));
+
+        if (yokai.IsKing)
+        {
+            GameManager.Winner(yokai.PlayerIndex);
+        }
     }
 
     private void MoveYokaiToAnchor(Yokai yokai, Transform anchor, Action onComplete = null)
