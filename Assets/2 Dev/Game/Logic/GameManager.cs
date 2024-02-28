@@ -103,7 +103,19 @@ public class GameManager : MonoBehaviour
         CurrentPlayer = 0;
 
         // Effectuate movement
-        Board.TryMakeMove(input, ChangeSide);
+        Board.TryMakeMove(input, CheckForWinner);
+    }
+
+    private void CheckForWinner()
+    {
+        if (HasWinner(Board.GetCurrentBoard(), out int winner))
+        {
+            Debug.Log("Player " + winner + " WIN !");
+        }
+        else
+        {
+            ChangeSide();
+        }
     }
 
     private void ChangeSide()
@@ -135,8 +147,9 @@ public class GameManager : MonoBehaviour
 
     public static bool HasWinner(int[,] board, out int winner)
     {
-        int boardLength0 = board.GetLength(0);
-        int boardLength1 = board.GetLength(1);
+        Vector2Int format = Board.GetFormat();
+        int boardLength0 = format.x;
+        int boardLength1 = format.y;
         
         // check first and last line for kings
         for (var step = 0; step <= 1; step++)

@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
@@ -170,10 +171,19 @@ public class Board : MonoBehaviour
                 Debug.LogError("Yokai index redundance : " + yokai.YokaiIndex);
             }
             pos = GetCoords(yokai.PlayerIndex, yokai.StartPosition);
-            _board[pos.x, pos.y] = yokai.YokaiIndex;
+            SetYokaiIndexAtPosition(yokai.YokaiIndex, pos);
+            yokai.CurrentPosition = pos;
 
             MoveYokaiToPosition(yokai, pos);
         }
+
+        DebugBoard();
+    }
+
+    public static int[,] GetCurrentBoard()
+    {
+        if (Exist()) return Instance._board;
+        return null;
     }
 
     private int GetYokaiIndexAtPosition(Vector2Int position)
@@ -212,6 +222,11 @@ public class Board : MonoBehaviour
             Mode.F5x6 => new Vector2Int(5, 6),
             _ => throw new NotImplementedException(),
         };
+    }
+    public static Vector2Int GetFormat()
+    {
+        if (Exist()) return Instance._format;
+        return Vector2Int.zero;
     }
 
     private Vector2Int GetCoords(int playerIndex, Vector2Int position)
@@ -333,7 +348,22 @@ public class Board : MonoBehaviour
             MoveYokaiToCemetery(yokai);
         }
 
-        MoveYokaiToPosition(input.yokai, input.newPosition, onComplete);
+        SetYokaiNewPosition(input.yokai, input.newPosition, onComplete);
+
+        DebugBoard();
+    }
+
+    private void SetYokaiNewPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
+    {
+        if (IsPositionValid(yokai.CurrentPosition))
+            SetYokaiIndexAtPosition(0, yokai.CurrentPosition);
+        else
+            RemoveFromCemetery(yokai);
+
+        yokai.CurrentPosition = newPosition;
+        SetYokaiIndexAtPosition(yokai.YokaiIndex, newPosition);
+
+        MoveYokaiToPosition(yokai, newPosition, onComplete);
     }
 
     #endregion
@@ -374,11 +404,6 @@ public class Board : MonoBehaviour
 
     private void MoveYokaiToPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
     {
-        if (IsPositionValid(yokai.CurrentPosition))
-            SetYokaiIndexAtPosition(0, yokai.CurrentPosition);
-
-        yokai.CurrentPosition = newPosition;
-        SetYokaiIndexAtPosition(yokai.YokaiIndex, newPosition);
         MoveYokaiToAnchor(yokai, GetBoardPiece(newPosition).transform, onComplete);
     }
     private void MoveYokaiToCemetery(Yokai yokai, Action onComplete = null)
@@ -453,13 +478,33 @@ public class Board : MonoBehaviour
 
     private void DebugBoard()
     {
-        for (int line = 0; line < _format.y; line++)
+        StringBuilder sb = new();
+        for (int line = _format.y - 1; line >= 0; line--)
         {
             for (int column = 0; column < _format.x; column++)
             {
-
+                sb.Append(GetYokaiIndexAtPosition(new Vector2Int(column, line)));
+                sb.Append(' ');
             }
+            sb.AppendLine();
         }
+
+        sb.Append("Cemetery 1 : ");
+        foreach (var yokai in _cemetery[1])
+        {
+            sb.Append(yokai.YokaiIndex);
+            sb.Append(' ');
+        }
+        sb.AppendLine();
+
+        sb.Append("Cemetery 2 : ");
+        foreach (var yokai in _cemetery[2])
+        {
+            sb.Append(yokai.YokaiIndex);
+            sb.Append(' ');
+        }
+
+        Debug.Log(sb.ToString());
     }
 
     #endregion

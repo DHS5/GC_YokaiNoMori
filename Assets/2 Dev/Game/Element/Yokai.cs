@@ -23,8 +23,17 @@ public class Yokai : MonoBehaviour,
     }
 
     public bool IsKing => data.IsKing;
-    public int YokaiIndex => (playerIndex - 1) + data.Index;
     public Vector2Int StartPosition => data.StartPosition;
+
+    private int _yokaiIndex;
+    public int YokaiIndex
+    {
+        get
+        {
+            if (_yokaiIndex == 0) _yokaiIndex = (playerIndex - 1) + data.Index;
+            return _yokaiIndex;
+        }
+    }
 
     #endregion
 
@@ -51,28 +60,27 @@ public class Yokai : MonoBehaviour,
         {
             Board.TryShowOptions(this);
         }
-        else
-        {
-            Board.TryHideOptions();
-        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-
+        if (!IsSelected)
+            Board.TryHideOptions();
     }
 
     #endregion
 
     #region Selection
 
+    public bool IsSelected { get; private set; }
+
     private void OnSelected()
     {
-        Debug.Log("On selected " + this, this);
+        IsSelected = true;
     }
     public void Deselect()
     {
-        Debug.Log("Deselected " + this, this);
+        IsSelected = false;
     }
 
     #endregion

@@ -60,7 +60,8 @@ public class BoardPiece : MonoBehaviour,
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        HumanController.BoardPieceInput(this, OnSelected);
+        if (_currentState == State.VALID)
+            HumanController.BoardPieceInput(this, OnSelected);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
