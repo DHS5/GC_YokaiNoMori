@@ -163,7 +163,7 @@ public class GameManager : MonoBehaviour
                 if (yokai == null || !yokai.IsKing || yokai.PlayerIndex != playerToCheck) continue;
                 
                 // check around the king if there is a piece of the other player that can reach the king
-                if (IsKingInDanger(board, column, line, playerToCheck, yokai))
+                if (IsKingInDanger(board, playerToCheck, yokai))
                 {
                     // The king is in danger
                     winner = playerToCheck == 1 ? 2 : 1;
@@ -181,8 +181,10 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    private static bool IsKingInDanger(int[,] board, int xKing, int yKing, int playerToCheck, Yokai yokai)
+    private static bool IsKingInDanger(int[,] board, int playerToCheck, Yokai yokai)
     {
+        var xKing = yokai.CurrentPosition.x;
+        var yKing = yokai.CurrentPosition.y;
         for (var lineOffset = -1; lineOffset <= 1; lineOffset++)
         {
             for (var columnOffset = -1; columnOffset <= 1; columnOffset++)
