@@ -163,7 +163,7 @@ public class GameManager : MonoBehaviour
             for (var j = 0; j < formatX; j++)
             {
                 var yokai = Board.GetYokaiByIndex(board[j, line]);
-                if (yokai == null || !yokai.IsKing) continue;
+                if (yokai == null || !yokai.IsKing || yokai.PlayerIndex != playerToCheck) continue;
                 
                 // check around the king if there is a piece of the other player that can reach the king
                 for (var i = -1; i <= 1; i++)
