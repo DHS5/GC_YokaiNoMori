@@ -253,7 +253,14 @@ public class GameManager : MonoBehaviour
 
     public static void Winner(int playerIndex)
     {
-        Debug.Log("Player " + playerIndex + " WIN !");
+        if (playerIndex == 0)
+        {
+            Debug.Log("No Winner ! You suck !");
+        }
+        else
+        {
+            Debug.Log("Player " + playerIndex + " WIN !");
+        }
         IsPlaying = false;
     }
 

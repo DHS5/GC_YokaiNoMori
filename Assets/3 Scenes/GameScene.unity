@@ -396,7 +396,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   mainCamera: {fileID: 519420031}
-  cameraRotationDuration: 2
+  cameraRotationDuration: 1
 --- !u!4 &1084272201
 Transform:
   m_ObjectHideFlags: 0

@@ -17,8 +17,19 @@ public static class BoardRegister
 
     public static void Register()
     {
-        _boards.Add(Board.GetCurrentBoard());
-        DebugLast();
+        int[,] board = Board.GetCurrentBoard();
+        int lineNumber = board.GetLength(1);
+        int columnNumber = board.GetLength(0);
+        int[,] newBoard = new int[columnNumber, lineNumber];
+        for (int line = 0; line < lineNumber; line++)
+        {
+            for (int column = 0; column < columnNumber; column++)
+            {
+                newBoard[column, line] = board[column, line];
+            }
+        }
+
+        _boards.Add(newBoard);
 
         if (CheckForRepetion())
         {
@@ -29,31 +40,44 @@ public static class BoardRegister
     public static bool CheckForRepetion()
     {
         int count = _boards.Count;
-        if (count < 5) return false;
+        if (count < 9) return false;
 
-        while (_boards.Count > 5)
+        while (_boards.Count > 9)
         {
             _boards.RemoveAt(0);
         }
 
-        return _boards[4] == _boards[2] && _boards[2] == _boards[0];
+        return AreEqual(4, 8) && AreEqual(4,0);
     }
 
-    private static void DebugLast()
+    public static bool AreEqual(int index1, int index2)
     {
-        int index = (_boards.Count - 1);
-        Debug.Log(_boards.Count + " " + index);
+        for (int line = 0; line < _boards[index1].GetLength(1); line++)
+        {
+            for (int column = 0; column < _boards[index1].GetLength(0); column++)
+            {
+                if (_boards[index1][column, line] != _boards[index2][column, line]) return false;
+            }
+        }
+        return true;
+    }
+
+
+    private static void DebugAtIndex(int index)
+    {
         int[,] last = _boards[index];
 
         StringBuilder sb = new();
-        for (int line = last.GetLength(0); line >= 0; line--)
+        sb.AppendLine("move " + index);
+        for (int line = last.GetLength(1) - 1; line >= 0; line--)
         {
-            for (int column = 0; column < last.GetLength(1); column++)
+            for (int column = 0; column < last.GetLength(0); column++)
             {
-                sb.Append(last[column,line]);
+                sb.Append(last[column, line]);
                 sb.Append(' ');
             }
             sb.AppendLine();
         }
+        Debug.Log(sb.ToString());
     }
 }
