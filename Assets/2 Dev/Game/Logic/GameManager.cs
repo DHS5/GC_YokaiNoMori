@@ -27,11 +27,13 @@ public class GameManager : MonoBehaviour
 
     #region Global Members
 
-    [Header("References")]
+    [Header("Physic Interactions")]
     [SerializeField] private Physics2DRaycaster physicsRaycaster;
-    [SerializeField] private Camera mainCamera;
+    [SerializeField] private LayerMask boardLayer;
+    [SerializeField] private LayerMask yokaiLayer;
 
-    [Header("Parameters")]
+    [Header("Camera")]
+    [SerializeField] private Camera mainCamera;
     [SerializeField] private float cameraRotationDuration = 2f;
 
     #endregion
@@ -46,6 +48,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         OnGameStart?.Invoke();
+
+        SetBoardLayer();
     }
 
     #endregion
@@ -116,6 +120,14 @@ public class GameManager : MonoBehaviour
     private void EnablePhysicInteractions(bool enable)
     {
         physicsRaycaster.enabled = enable;
+    }
+    private void SetBoardLayer()
+    {
+        physicsRaycaster.eventMask = boardLayer;
+    }
+    private void SetYokaiLayer()
+    {
+        physicsRaycaster.eventMask = yokaiLayer;
     }
 
     private Vector3 _currentCameraRotation;

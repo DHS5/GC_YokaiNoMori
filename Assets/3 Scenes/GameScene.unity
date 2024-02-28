@@ -275,7 +275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EventMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 192
   m_MaxRayIntersections: 0
 --- !u!1 &619394800
 GameObject:
@@ -389,6 +389,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   physicsRaycaster: {fileID: 519420033}
+  boardLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  yokaiLayer:
+    serializedVersion: 2
+    m_Bits: 64
   mainCamera: {fileID: 519420031}
   cameraRotationDuration: 2
 --- !u!4 &1084272201
