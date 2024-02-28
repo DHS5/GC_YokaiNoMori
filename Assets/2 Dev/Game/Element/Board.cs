@@ -188,6 +188,7 @@ public class Board : MonoBehaviour
 
     public static Yokai GetYokaiByIndex(int index)
     {
+        if (index == 0) return null;
         if (Exist()) return Instance._yokaiDico[index];
         return null;
     }

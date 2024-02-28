@@ -108,14 +108,17 @@ public class GameManager : MonoBehaviour
 
     private void CheckForWinner()
     {
+        Debug.Log("check for winner");
         if (HasWinner(Board.GetCurrentBoard(), out int winner))
         {
             Debug.Log("Player " + winner + " WIN !");
         }
         else
         {
+            Debug.Log("change side");
             ChangeSide();
         }
+        Debug.Log("okayy");
     }
 
     private void ChangeSide()

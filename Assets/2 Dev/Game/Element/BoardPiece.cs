@@ -82,7 +82,7 @@ public class BoardPiece : MonoBehaviour,
 
     private void OnSelected()
     {
-        Debug.Log("On selected " + this, this);
+        //Debug.Log("On selected " + this, this);
     }
 
     #endregion
