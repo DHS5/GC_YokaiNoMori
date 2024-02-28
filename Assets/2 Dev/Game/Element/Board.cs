@@ -453,7 +453,13 @@ public class Board : MonoBehaviour
 
     private void DebugBoard()
     {
+        for (int line = 0; line < _format.y; line++)
+        {
+            for (int column = 0; column < _format.x; column++)
+            {
 
+            }
+        }
     }
 
     #endregion

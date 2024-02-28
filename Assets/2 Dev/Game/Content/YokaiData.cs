@@ -6,6 +6,7 @@ using UnityEngine;
 public class YokaiData : ScriptableObject
 {
     [Header("Yokai Data")]
+    [SerializeField] private bool isKing;
     [SerializeField] private int index;
     [SerializeField] private string displayName;
     [SerializeField] private Sprite sprite;
@@ -23,6 +24,7 @@ public class YokaiData : ScriptableObject
     [SerializeField] private YokaiMovementGrid secondMovementGrid;
 
 
+    public bool IsKing => isKing;
     public int Index => index;
     public string DisplayName => displayName;
     public Sprite Sprite => sprite;

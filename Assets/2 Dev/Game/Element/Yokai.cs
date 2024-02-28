@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -21,6 +22,7 @@ public class Yokai : MonoBehaviour,
         set => playerIndex = value;
     }
 
+    public bool IsKing => data.IsKing;
     public int YokaiIndex => (playerIndex - 1) + data.Index;
     public Vector2Int StartPosition => data.StartPosition;
 
@@ -100,6 +102,12 @@ public class Yokai : MonoBehaviour,
         }
 
         return deltas;
+    }
+
+    public bool CanEat(Vector2Int position)
+    {
+        Vector2Int delta = position - CurrentPosition;
+        return ValidDeltas.Contains(delta);
     }
 
     #endregion
