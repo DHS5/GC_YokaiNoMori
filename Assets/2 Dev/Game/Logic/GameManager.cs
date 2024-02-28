@@ -163,10 +163,13 @@ public class GameManager : MonoBehaviour
             var line = step == 0 ? formatY - 1 : 0;
             var playerToCheck = step == 0 ? 1 : 2;
         
+            // search last line for kings
             for (var column = 0; column < formatX; column++)
             {
                 var yokai = Board.GetYokaiByIndex(board[column, line]);
                 if (yokai == null || !yokai.IsKing || yokai.PlayerIndex != playerToCheck) continue;
+                
+                // king found !
                 
                 // check around the king if there is a piece of the other player that can reach the king
                 if (IsKingInDanger(board, playerToCheck, yokai))
@@ -182,15 +185,15 @@ public class GameManager : MonoBehaviour
                 return true;
             }            
         }
-        // no winner
+        // No winner
         winner = 0;
         return false;
     }
 
-    private static bool IsKingInDanger(int[,] board, int playerToCheck, Yokai yokai)
+    private static bool IsKingInDanger(int[,] board, int playerToCheck, Yokai kingPiece)
     {
-        var xKing = yokai.CurrentPosition.x;
-        var yKing = yokai.CurrentPosition.y;
+        var xKing = kingPiece.CurrentPosition.x;
+        var yKing = kingPiece.CurrentPosition.y;
         for (var lineOffset = -1; lineOffset <= 1; lineOffset++)
         {
             for (var columnOffset = -1; columnOffset <= 1; columnOffset++)
@@ -199,7 +202,7 @@ public class GameManager : MonoBehaviour
                 if (!Board.IsPositionValid(xKing + columnOffset, yKing + lineOffset)) continue;
 
                 var piece = Board.GetYokaiByIndex(board[xKing + columnOffset, yKing + lineOffset]);
-                if (piece != null && piece.PlayerIndex != playerToCheck && piece.CanEat(yokai.CurrentPosition))
+                if (piece != null && piece.PlayerIndex != playerToCheck && piece.CanEat(kingPiece.CurrentPosition))
                 {
                     return true;
                 }
