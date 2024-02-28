@@ -108,17 +108,14 @@ public class GameManager : MonoBehaviour
 
     private void CheckForWinner()
     {
-        Debug.Log("check for winner");
         if (HasWinner(Board.GetCurrentBoard(), out int winner))
         {
             Debug.Log("Player " + winner + " WIN !");
         }
         else
         {
-            Debug.Log("change side");
             ChangeSide();
         }
-        Debug.Log("okayy");
     }
 
     private void ChangeSide()
@@ -148,7 +145,7 @@ public class GameManager : MonoBehaviour
 
     #region Game Rules
 
-    public static bool HasWinner(int[,] board, out int winner)
+    private bool HasWinner(int[,] board, out int winner)
     {
         var format = Board.GetFormat();
         var formatX = format.x;
@@ -158,7 +155,7 @@ public class GameManager : MonoBehaviour
         for (var step = 0; step <= 1; step++)
         {
             var line = step == 0 ? formatY - 1 : 0;
-            var playerToCheck = step == 0 ? 1 : 2;
+            var playerToCheck = step == 0 ? 2 : 1;
         
             for (var column = 0; column < formatX; column++)
             {
@@ -190,6 +187,42 @@ public class GameManager : MonoBehaviour
         // no winner
         winner = 0;
         return false;
+    }
+
+    private int CheckPlayerWinner(int playerIndex, int[,] board, int lineToSearch, int columnNumber)
+    {
+        Yokai yokai;
+        bool foundKing = false;
+        Vector2Int kingPos = Vector2Int.zero;
+        for (int column = 0; column < columnNumber; column++)
+        {
+            yokai = Board.GetYokaiByIndex(board[column, lineToSearch]);
+            if (yokai != null && yokai.PlayerIndex == playerIndex && yokai.IsKing)
+            {
+                kingPos = new Vector2Int(column, lineToSearch);
+                foundKing = true;
+                break;
+            }
+        }
+
+        if (foundKing)
+        {
+            for (int column = 0; column < columnNumber; column++)
+            {
+                yokai = Board.GetYokaiByIndex(board[column, lineToSearch]);
+                if (yokai != null && yokai.CanEat(kingPos))
+                {
+                    return yokai.PlayerIndex;
+                }
+                yokai = Board.GetYokaiByIndex(board[column, lineToSearch + (playerIndex == 1 ? -1 : 1)]);
+                if (yokai != null && yokai.CanEat(kingPos))
+                {
+                    return yokai.PlayerIndex;
+                }
+            }
+            return playerIndex;
+        }
+        return 0;
     }
 
     #endregion
