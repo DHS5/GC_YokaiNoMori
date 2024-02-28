@@ -177,7 +177,8 @@ public class Board : MonoBehaviour
             MoveYokaiToPosition(yokai, pos);
         }
 
-        DebugBoard();
+        BoardRegister.Init();
+        //DebugBoard();
     }
 
     public static int[,] GetCurrentBoard()
@@ -357,7 +358,8 @@ public class Board : MonoBehaviour
 
         SetYokaiNewPosition(input.yokai, input.newPosition, onComplete);
 
-        DebugBoard();
+        BoardRegister.Register();
+        //DebugBoard();
     }
 
     private void SetYokaiNewPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
