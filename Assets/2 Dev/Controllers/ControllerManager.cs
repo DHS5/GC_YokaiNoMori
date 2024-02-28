@@ -79,6 +79,9 @@ public class ControllerManager : MonoBehaviour
         human1.name = "Human Controller 1";
         human2.name = "Human Controller 2";
 
+        Controller1 = human1;
+        Controller2 = human2;
+
         PlayerManager.AssignPlayerControllers(human1, human2);
     }
     private void CreateHumanAndAIControllers()
@@ -88,6 +91,9 @@ public class ControllerManager : MonoBehaviour
 
         human.name = "Human Controller";
         ai.name = "AI Controller";
+
+        Controller1 = human;
+        Controller2 = ai;
 
         PlayerManager.AssignPlayerControllers(human, ai);
     }
@@ -99,6 +105,9 @@ public class ControllerManager : MonoBehaviour
         ai1.name = "AI Controller 1";
         ai2.name = "AI Controller 2";
 
+        Controller1 = ai1;
+        Controller2 = ai2;
+
         PlayerManager.AssignPlayerControllers(ai1, ai2);
     }
 
@@ -109,6 +118,27 @@ public class ControllerManager : MonoBehaviour
     private AIController InstantiateAIController()
     {
         return Instantiate(humanControllerPrefab, controllerContainer).GetComponent<AIController>();
+    }
+
+    #endregion
+
+    #region Controllers
+
+    public static Controller Controller1 { get; private set; }
+    public static Controller Controller2 { get; private set; }
+           
+    public static Controller CurrentController
+    {
+        get
+        {
+            int currentPlayer = GameManager.CurrentPlayer;
+            if (currentPlayer == 0)
+            {
+                Debug.LogWarning("Current Player is 0");
+                return null;
+            }
+            return currentPlayer == 1 ? Controller1 : Controller2;
+        }
     }
 
     #endregion

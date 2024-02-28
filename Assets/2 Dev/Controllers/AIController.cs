@@ -17,4 +17,6 @@ public class AIController : Controller
     }
 
     #endregion
+
+    public override bool IsHuman => false;
 }

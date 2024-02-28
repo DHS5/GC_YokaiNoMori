@@ -33,6 +33,8 @@ public class Player : MonoBehaviour
 
     private Controller _controller;
 
+    public bool IsHuman => _controller.IsHuman;
+
     public void AssignController(Controller controller)
     {
         _controller = controller;

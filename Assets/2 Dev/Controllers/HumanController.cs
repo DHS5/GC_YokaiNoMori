@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class HumanController : Controller
 {
+    public override bool IsHuman => true;
+
     #region Core Behaviour
 
 

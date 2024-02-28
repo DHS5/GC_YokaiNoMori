@@ -48,4 +48,10 @@ public abstract class Controller : MonoBehaviour
     }
 
     #endregion
+
+    #region Human / AI
+
+    public abstract bool IsHuman { get; }
+
+    #endregion
 }
