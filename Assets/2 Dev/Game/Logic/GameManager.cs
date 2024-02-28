@@ -162,16 +162,18 @@ public class GameManager : MonoBehaviour
                         var piece = Board.GetYokaiAtPosition(position);
                         if (piece != null && piece.PlayerIndex != kingTeam && piece.CanEat(yokaiPos))
                         {
+                            // oops, the king is in danger
                             winner = piece.PlayerIndex;
                             return true;
                         }
                     }
                 }
+                // The king is all the way to the end and there is no piece that can eat it
                 winner = yokai.PlayerIndex;
                 return true;
             }            
         }
-    
+        // no winner
         winner = 0;
         return false;
     }
