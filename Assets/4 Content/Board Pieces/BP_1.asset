@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246dd0c9e366a0649a0e60256a6c2f17, type: 3}
   m_Name: BP_1
   m_EditorClassIdentifier: 
-  normalColor: {r: 1, g: 0.8078432, b: 0.49411768, a: 1}
-  validColor: {r: 0.65017295, g: 0.990566, b: 0.41585082, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  validColor: {r: 0.33490568, g: 1, b: 0.36620423, a: 1}
   unvalidColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
-  hoveredColor: {r: 0, g: 0.7575803, b: 1, a: 1}
+  hoveredColor: {r: 0, g: 1, b: 0.04705883, a: 1}

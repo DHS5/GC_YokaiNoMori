@@ -20,7 +20,6 @@ public class ControllerManager : MonoBehaviour
         if (Instance != null)
         {
             Instance.isInGameScene = isInGameScene;
-            Destroy(gameObject);
             return;
         }
         Instance = this;
@@ -48,7 +47,11 @@ public class ControllerManager : MonoBehaviour
 
     private void Start()
     {
-        if (isInGameScene) CreateControllers();
+        if (Instance != this)
+        {
+            if (Instance.isInGameScene) Instance.CreateControllers();
+            Destroy(gameObject);
+        }
     }
 
     #endregion

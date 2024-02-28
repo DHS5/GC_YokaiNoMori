@@ -20,7 +20,8 @@ public class BoardPiece : MonoBehaviour,
     [SerializeField] private BoardPieceData data;
 
     [Header("References")]
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer mainSpriteRenderer;
+    [SerializeField] private SpriteRenderer selectSpriteRenderer;
 
 
     public Vector2Int Position => position;
@@ -37,9 +38,16 @@ public class BoardPiece : MonoBehaviour,
     }
     private void VerifyState()
     {
-        if (spriteRenderer != null && data != null)
+        if (data != null)
         {
-            spriteRenderer.color = (_currentState == State.VALID && _isHovered) ? data.HoveredColor : data.GetColor(_currentState);
+            if (mainSpriteRenderer != null)
+                mainSpriteRenderer.color = data.GetColor(_currentState);
+            if (selectSpriteRenderer != null)
+            {
+                bool validAndHovered = _isHovered && _currentState == State.VALID;
+                selectSpriteRenderer.color = validAndHovered ? data.HoveredColor : Color.white;
+                selectSpriteRenderer.transform.localScale = Vector3.one * (validAndHovered ? 1.05f : 1f);
+            }
         }
     }
 

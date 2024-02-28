@@ -14,7 +14,12 @@ public class Yokai : MonoBehaviour,
     [SerializeField] private YokaiData data;
 
     [Header("References")]
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer mainSpriteRenderer;
+    [SerializeField] private SpriteRenderer outlineSpriteRenderer;
+
+    [Header("Color")]
+    [SerializeField] private Color hoveredColor;
+    [SerializeField] private Color selectedColor;
 
     public int PlayerIndex
     {
@@ -44,10 +49,24 @@ public class Yokai : MonoBehaviour,
         SetSprite();
     }
 
+    private void OnEnable()
+    {
+        GameManager.OnSetTurn += OnSetTurn;
+        GameManager.OnYokaiSelected += CheckSelectability;
+        GameManager.OnYokaiDeselected += CheckSelectability;
+    }
+    private void OnDisable()
+    {
+        GameManager.OnSetTurn -= OnSetTurn;
+        GameManager.OnYokaiSelected -= CheckSelectability;
+        GameManager.OnYokaiDeselected -= CheckSelectability;
+    }
+
     #endregion
 
     #region Pointer Interfaces
 
+    private bool _isHovered;
     public void OnPointerClick(PointerEventData eventData)
     {
         if (GameManager.CurrentPlayer == PlayerIndex)
@@ -56,6 +75,8 @@ public class Yokai : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        _isHovered = true;
+        SetOutline();
         if (GameManager.CurrentPlayer == PlayerIndex)
         {
             Board.TryShowOptions(this);
@@ -64,6 +85,8 @@ public class Yokai : MonoBehaviour,
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        _isHovered = false;
+        SetOutline();
         if (!IsSelected)
             Board.TryHideOptions();
     }
@@ -72,15 +95,29 @@ public class Yokai : MonoBehaviour,
 
     #region Selection
 
+    private bool _isSelectable;
     public bool IsSelected { get; private set; }
+
+    private void OnSetTurn(int _playerIndex)
+    {
+        _isSelectable = _playerIndex == PlayerIndex;
+        SetOutline();
+    }
+    private void CheckSelectability()
+    {
+        _isSelectable = PlayerIndex == GameManager.CurrentPlayer;
+        SetOutline();
+    }
 
     private void OnSelected()
     {
         IsSelected = true;
+        SetOutline();
     }
     public void Deselect()
     {
         IsSelected = false;
+        SetOutline();
     }
 
     #endregion
@@ -125,7 +162,12 @@ public class Yokai : MonoBehaviour,
 
     private void SetSprite()
     {
-        if (spriteRenderer != null && data != null) spriteRenderer.sprite = data.Sprite;
+        if (mainSpriteRenderer != null && data != null) mainSpriteRenderer.sprite = data.Sprite;
+    }
+    private void SetOutline()
+    {
+        outlineSpriteRenderer.enabled = _isSelectable || IsSelected;
+        outlineSpriteRenderer.color = IsSelected ? selectedColor : _isHovered ? hoveredColor : Color.white;
     }
 
     #endregion

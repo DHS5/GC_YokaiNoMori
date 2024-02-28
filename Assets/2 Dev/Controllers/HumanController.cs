@@ -76,12 +76,14 @@ public class HumanController : Controller
         if (_humanPlayer1 != null && _humanPlayer1._isWaitingForInput && _humanPlayer1._hasYokai)
         {
             _humanPlayer1._input.newPosition = boardPiece.Position;
+            _humanPlayer1._input.yokai.Deselect();
             onInputValid?.Invoke();
             _humanPlayer1.SendInput();
         }
         else if (_humanPlayer2 != null && _humanPlayer2._isWaitingForInput && _humanPlayer2._hasYokai)
         {
             _humanPlayer2._input.newPosition = boardPiece.Position;
+            _humanPlayer2._input.yokai.Deselect();
             onInputValid?.Invoke();
             _humanPlayer2.SendInput();
         }

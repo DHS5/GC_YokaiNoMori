@@ -20,7 +20,7 @@ public class BoardPieceData : ScriptableObject
             case BoardPiece.State.VALID:
                  return validColor;
             case BoardPiece.State.UNVALID:
-                return unvalidColor;
+                return normalColor;
         }
         return Color.white;
     }

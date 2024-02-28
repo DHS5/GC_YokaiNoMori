@@ -64,6 +64,9 @@ public class GameManager : MonoBehaviour
     public static event Action OnGameStart;
     public static event Action<int> OnSetTurn;
 
+    public static event Action OnYokaiSelected;
+    public static event Action OnYokaiDeselected;
+
     #endregion
 
     #region Static Accessors
@@ -106,6 +109,7 @@ public class GameManager : MonoBehaviour
 
         // Set player to 0
         CurrentPlayer = 0;
+        OnSetTurn?.Invoke(CurrentPlayer);
 
         // Effectuate movement
         Board.TryMakeMove(input, CheckForWinner);
@@ -136,6 +140,7 @@ public class GameManager : MonoBehaviour
         if (Exist())
         {
             Instance.SetBoardLayer();
+            OnYokaiSelected?.Invoke();
         }
     }
     public static void DeselectYokai()
@@ -143,6 +148,7 @@ public class GameManager : MonoBehaviour
         if (Exist())
         {
             Instance.SetYokaiLayer();
+            OnYokaiDeselected?.Invoke();
         }
     }
 
