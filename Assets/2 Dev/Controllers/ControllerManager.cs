@@ -153,6 +153,21 @@ public class ControllerManager : MonoBehaviour
             mode = (Mode)value;
         }
     }
+    
+    public void SetHvH(bool isHvH)
+    {
+        if (isHvH) mode = Mode.HUMANvHUMAN;
+    }
+    
+    public void SetHvAI(bool isHvAI)
+    {
+        if (isHvAI) mode = Mode.HUMANvAI;
+    }
+    
+    public void SetAIvAI(bool isAIvAI)
+    {
+        if (isAIvAI) mode = Mode.AIvAI;
+    }
 
     #endregion
 }
