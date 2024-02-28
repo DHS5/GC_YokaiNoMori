@@ -7,10 +7,6 @@ public class HumanController : Controller
 {
     #region Core Behaviour
 
-    private void Start()
-    {
-        Register(this);
-    }
 
     #endregion
 
@@ -94,7 +90,10 @@ public class HumanController : Controller
 
     #region Player
 
-
+    protected override void OnAssignPlayer()
+    {
+        Register(this);
+    }
 
     #endregion
 }

@@ -25,8 +25,6 @@ public class ControllerManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        if (isInGameScene) Init();
     }
 
     #endregion
@@ -48,9 +46,9 @@ public class ControllerManager : MonoBehaviour
 
     #region Core Behaviour
 
-    private void Init()
+    private void Start()
     {
-        CreateControllers();
+        if (isInGameScene) CreateControllers();
     }
 
     #endregion
@@ -78,6 +76,9 @@ public class ControllerManager : MonoBehaviour
         HumanController human1 = InstantiateHumanController();
         HumanController human2 = InstantiateHumanController();
 
+        human1.name = "Human Controller 1";
+        human2.name = "Human Controller 2";
+
         PlayerManager.AssignPlayerControllers(human1, human2);
     }
     private void CreateHumanAndAIControllers()
@@ -85,12 +86,18 @@ public class ControllerManager : MonoBehaviour
         HumanController human = InstantiateHumanController();
         AIController ai = InstantiateAIController();
 
+        human.name = "Human Controller";
+        ai.name = "AI Controller";
+
         PlayerManager.AssignPlayerControllers(human, ai);
     }
     private void CreateAIControllers()
     {
         AIController ai1 = InstantiateAIController();
         AIController ai2 = InstantiateAIController();
+
+        ai1.name = "AI Controller 1";
+        ai2.name = "AI Controller 2";
 
         PlayerManager.AssignPlayerControllers(ai1, ai2);
     }

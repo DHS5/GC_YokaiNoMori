@@ -13,6 +13,8 @@ public abstract class Controller : MonoBehaviour
         player = _player;
     }
 
+    protected abstract void OnAssignPlayer();
+
     #endregion
 
     #region Core Behaviour

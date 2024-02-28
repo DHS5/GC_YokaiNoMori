@@ -8,4 +8,13 @@ public class AIController : Controller
     {
         throw new System.NotImplementedException();
     }
+
+    #region Player
+
+    protected override void OnAssignPlayer()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    #endregion
 }
