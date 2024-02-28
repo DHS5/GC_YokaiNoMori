@@ -17,7 +17,7 @@ public class Yokai : MonoBehaviour,
 
     public int PlayerIndex => playerIndex;
 
-    public int YokaiIndex => data.Index;
+    public int YokaiIndex => playerIndex * data.Index;
     public Vector2Int StartPosition => data.StartPosition;
 
     #endregion

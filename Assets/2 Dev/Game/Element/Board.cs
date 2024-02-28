@@ -103,13 +103,37 @@ public class Board : MonoBehaviour
     #region Board Datas
 
     private int[,] _board;
+    private Dictionary<int, List<Yokai>> _cemetery = new();
     private Dictionary<int, Yokai> _yokaiDico = new();
 
     private void InitBoard()
     {
+        // Init data structures
         _format = Format(mode);
-
+        _board = new int[_format.x, _format.y];
+        _cemetery.Clear();
+        _yokaiDico.Clear();
         
+        // Fill with 0
+        for (int line = 0; line < _format.y; line++)
+        {
+            for (int column = 0; column < _format.x; column++)
+            {
+                _board[column, line] = 0;
+            }
+        }
+
+        // Populate yokai dico and board
+        Vector2Int pos;
+        foreach (var yokai in yokaiList)
+        {
+            if (_yokaiDico.TryAdd(yokai.YokaiIndex, yokai))
+            {
+                Debug.LogError("Yokai index redundance");
+            }
+            pos = GetCoords(yokai.PlayerIndex, yokai.StartPosition);
+            _board[pos.x, pos.y] = yokai.YokaiIndex;
+        }
     }
 
     #endregion
@@ -123,7 +147,15 @@ public class Board : MonoBehaviour
         {
             Mode.F3x4 => new Vector2Int(3, 4),
             Mode.F5x6 => new Vector2Int(5, 6),
+            _ => throw new NotImplementedException(),
         };
+    }
+
+    private Vector2Int GetCoords(int playerIndex, Vector2Int position)
+    {
+        if (playerIndex == 1) return position;
+
+        return new Vector2Int(_format.x - 1 - position.x, _format.y - 1 - position.y);
     }
 
     #endregion
