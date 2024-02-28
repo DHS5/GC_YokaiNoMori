@@ -1,7 +1,9 @@
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class Board : MonoBehaviour
 {
@@ -147,7 +149,7 @@ public class Board : MonoBehaviour
         // Init data structures
         _format = Format(mode);
         _board = new int[_format.x, _format.y];
-        _cemetery.Clear();
+        InitCemetery();
         _yokaiDico.Clear();
         
         // Fill with 0
@@ -172,6 +174,29 @@ public class Board : MonoBehaviour
 
             MoveYokaiToPosition(yokai, pos);
         }
+    }
+
+    private int GetYokaiIndexAtPosition(Vector2Int position)
+    {
+        return _board[position.x, position.y];
+    }
+    private void SetYokaiIndexAtPosition(int yokaiIndex, Vector2Int position)
+    {
+        _board[position.x, position.y] = yokaiIndex;
+    }
+    public static Yokai GetYokaiAtPosition(Vector2Int position)
+    {
+        if (Exist())
+        {
+            int yokaiIndex = Instance.GetYokaiIndexAtPosition(position);
+            if (yokaiIndex == 0) return null;
+            return Instance._yokaiDico[yokaiIndex];
+        }
+        return null;
+    }
+    public static Yokai GetYokaiAtPosition(int posX, int posY)
+    {
+        return GetYokaiAtPosition(new Vector2Int(posX, posY));
     }
 
     #endregion
@@ -209,6 +234,86 @@ public class Board : MonoBehaviour
     #endregion
 
 
+    #region Board Hint
+
+    public static void TryShowOptions(Yokai yokai)
+    {
+        if (Exist())
+        {
+            Instance.ShowOptions(yokai);
+        }
+    }
+    private void ShowOptions(Yokai yokai)
+    {
+        Vector2Int pos = yokai.CurrentPosition;
+        if (pos == Vector2Int.down)
+        {
+            ShowAllEmpty();
+            return;
+        }
+
+        List<Vector2Int> validPositions = new();
+
+        Vector2Int temp;
+        foreach (var delta in yokai.ValidDeltas)
+        {
+            temp = pos + delta;
+            if (IsPositionValid(temp) && !ContainsPlayer(temp, yokai.PlayerIndex))
+            {
+                validPositions.Add(temp);
+            }
+        }
+
+        BoardPiece boardPiece;
+        bool around;
+        for (int line = 0; line < _format.y; line++)
+        {
+            for (int column = 0; column < _format.x; column++)
+            {
+                boardPiece = structure.Get(column, line);
+                around = AreAround(pos, boardPiece.Position);
+                if (around)
+                {
+                    boardPiece.SetState(validPositions.Contains(boardPiece.Position) ? BoardPiece.State.VALID : BoardPiece.State.UNVALID);
+                }
+                else
+                {
+                    boardPiece.SetState(BoardPiece.State.NORMAL);
+                }
+            }
+        }
+    }
+    private void ShowAllEmpty()
+    {
+        for (int line = 0; line < _format.y; line++)
+        {
+            for (int column = 0; column < _format.x; column++)
+            {
+                structure.Get(column, line)
+                    .SetState(IsEmpty(new Vector2Int(column, line)) ? BoardPiece.State.VALID : BoardPiece.State.UNVALID);
+            }
+        }
+    }
+    public static void TryHideOptions()
+    {
+        if (Exist())
+        {
+            Instance.HideOptions();
+        }
+    }
+    private void HideOptions()
+    {
+        for (int line = 0; line < _format.y; line++)
+        {
+            for (int column = 0; column < _format.x; column++)
+            {
+                structure.Get(column, line).SetState(BoardPiece.State.NORMAL);
+            }
+        }
+    }
+
+    #endregion
+
     #region Board Modification
 
     public static void TryMakeMove(Player.Input input, Action onComplete)
@@ -220,10 +325,20 @@ public class Board : MonoBehaviour
     }
     private void MakeMove(Player.Input input, Action onComplete)
     {
-        // TODO
-        onComplete?.Invoke();
+        HideOptions();
+
+        Yokai yokai = GetYokaiAtPosition(input.newPosition);
+        if (yokai != null)
+        {
+            MoveYokaiToCemetery(yokai);
+        }
+
+        MoveYokaiToPosition(input.yokai, input.newPosition, onComplete);
     }
 
+    #endregion
+
+    #region Board Tests
 
     public static bool IsMoveValid(Vector2Int currentPosition, Vector2Int delta)
     {
@@ -235,6 +350,23 @@ public class Board : MonoBehaviour
         if (Exist()) return position.x >= 0 && position.x < Instance._format.x && position.y >= 0 && position.y < Instance._format.y;
         return false;
     }
+    public static bool AreAround(Vector2Int position1, Vector2Int position2)
+    {
+        return Mathf.Abs(position1.x - position2.x) <= 1 && Mathf.Abs(position1.y - position2.y) <= 1;
+    }
+    public static bool ContainsPlayer(Vector2Int position, int playerIndex)
+    {
+        if (Exist())
+        {
+            int yokaiIndex = Instance.GetYokaiIndexAtPosition(position);
+            return yokaiIndex != 0 && Instance._yokaiDico[yokaiIndex].PlayerIndex == playerIndex;
+        }
+        return false;
+    }
+    public static bool IsEmpty(Vector2Int position)
+    {
+        return Exist() && Instance.GetYokaiIndexAtPosition(position) == 0;
+    }
 
     #endregion
 
@@ -242,10 +374,19 @@ public class Board : MonoBehaviour
 
     private void MoveYokaiToPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
     {
+        if (IsPositionValid(yokai.CurrentPosition))
+            SetYokaiIndexAtPosition(0, yokai.CurrentPosition);
+
+        yokai.CurrentPosition = newPosition;
+        SetYokaiIndexAtPosition(yokai.YokaiIndex, newPosition);
         MoveYokaiToAnchor(yokai, GetBoardPiece(newPosition).transform, onComplete);
     }
     private void MoveYokaiToCemetery(Yokai yokai, Action onComplete = null)
     {
+        yokai.PlayerIndex = yokai.PlayerIndex == 1 ? 2 : 1;
+
+        AddToCemetery(yokai);
+        yokai.CurrentPosition = Vector2Int.down;
         MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex), onComplete);
     }
 
@@ -258,6 +399,25 @@ public class Board : MonoBehaviour
         {
             DOVirtual.DelayedCall(yokaiMoveDuration, () => onComplete.Invoke());
         }
+    }
+
+    #endregion
+
+    #region Cemetery
+
+    private void InitCemetery()
+    {
+        _cemetery.Clear();
+        _cemetery.Add(1, new List<Yokai>());
+        _cemetery.Add(2, new List<Yokai>());
+    }
+    private void AddToCemetery(Yokai yokai)
+    {
+        _cemetery[yokai.PlayerIndex].Add(yokai);
+    }
+    private void RemoveFromCemetery(Yokai yokai)
+    {
+        _cemetery[yokai.PlayerIndex].Remove(yokai);
     }
 
     #endregion
@@ -286,6 +446,15 @@ public class Board : MonoBehaviour
     }
 
 #endif
+
+    #endregion
+
+    #region Debug
+
+    private void DebugBoard()
+    {
+
+    }
 
     #endregion
 }

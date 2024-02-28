@@ -30,11 +30,16 @@ public class BoardPiece : MonoBehaviour,
     #region Appearance Methods
 
     private State _currentState = State.NORMAL;
-    public void SetState(State state, bool hovered = false)
+    public void SetState(State state)
+    {
+        _currentState = state;
+        VerifyState();
+    }
+    private void VerifyState()
     {
         if (spriteRenderer != null && data != null)
         {
-            spriteRenderer.color = hovered ? data.HoveredColor : data.GetColor(state);
+            spriteRenderer.color = (_currentState == State.VALID && _isHovered) ? data.HoveredColor : data.GetColor(_currentState);
         }
     }
 
@@ -51,6 +56,8 @@ public class BoardPiece : MonoBehaviour,
 
     #region Pointer Interfaces
 
+    private bool _isHovered = false;
+
     public void OnPointerClick(PointerEventData eventData)
     {
         HumanController.BoardPieceInput(this, OnSelected);
@@ -58,15 +65,14 @@ public class BoardPiece : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_currentState == State.VALID)
-        {
-            SetState(_currentState, true);
-        }
+        _isHovered = true;
+        VerifyState();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        SetState(_currentState, false);
+        _isHovered = false;
+        VerifyState();
     }
 
     #endregion

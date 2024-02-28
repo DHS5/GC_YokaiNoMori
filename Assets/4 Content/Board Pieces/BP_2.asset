@@ -15,4 +15,4 @@ MonoBehaviour:
   normalColor: {r: 1, g: 0.739833, b: 0.49411762, a: 1}
   validColor: {r: 0.65017295, g: 0.990566, b: 0.41585082, a: 1}
   unvalidColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
-  hoveredColor: {r: 0.18546164, g: 1, b: 0, a: 1}
+  hoveredColor: {r: 0, g: 0.75686276, b: 1, a: 1}

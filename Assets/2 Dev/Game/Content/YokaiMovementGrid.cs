@@ -24,6 +24,8 @@ public class YokaiMovementGrid
 
     [SerializeField] private List<Vector2Int> validDeltas = new();
 
+    public List<Vector2Int> ValidDeltas => validDeltas;
+
     public void ComputeValidDeltas(bool debug = false)
     {
         validDeltas.Clear();

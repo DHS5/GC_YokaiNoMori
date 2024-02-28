@@ -15,7 +15,11 @@ public class Yokai : MonoBehaviour,
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    public int PlayerIndex => playerIndex;
+    public int PlayerIndex
+    {
+        get => playerIndex;
+        set => playerIndex = value;
+    }
 
     public int YokaiIndex => (playerIndex - 1) + data.Index;
     public Vector2Int StartPosition => data.StartPosition;
@@ -41,12 +45,19 @@ public class Yokai : MonoBehaviour,
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        //Debug.Log("Hover begin");
+        if (GameManager.CurrentPlayer == PlayerIndex)
+        {
+            Board.TryShowOptions(this);
+        }
+        else
+        {
+            Board.TryHideOptions();
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        //Debug.Log("Hover end");
+
     }
 
     #endregion
@@ -60,6 +71,35 @@ public class Yokai : MonoBehaviour,
     public void Deselect()
     {
         Debug.Log("Deselected " + this, this);
+    }
+
+    #endregion
+
+    #region Position & Options
+
+    public Vector2Int CurrentPosition { get; set; }
+
+    private List<Vector2Int> _validDeltas;
+    public List<Vector2Int> ValidDeltas
+    {
+        get
+        {
+            if (_validDeltas == null) _validDeltas = ComputeDeltas();
+            return _validDeltas;
+        }
+    }
+
+    private List<Vector2Int> ComputeDeltas()
+    {
+        if (PlayerIndex == 1) return data.GetValidDeltas();
+
+        List<Vector2Int> deltas = new();
+        foreach (var delta in data.GetValidDeltas())
+        {
+            deltas.Add(-delta);
+        }
+
+        return deltas;
     }
 
     #endregion

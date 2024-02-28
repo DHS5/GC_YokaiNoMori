@@ -28,6 +28,8 @@ public class YokaiData : ScriptableObject
     public Sprite Sprite => sprite;
     public Vector2Int StartPosition => startPosition;
 
+    public List<Vector2Int> GetValidDeltas() => baseMovementGrid.ValidDeltas;
+
 
 #if UNITY_EDITOR
     private void OnValidate()
