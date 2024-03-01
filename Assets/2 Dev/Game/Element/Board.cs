@@ -254,6 +254,11 @@ public class Board : MonoBehaviour
         return playerIndex == 1 ? player1Cemetery : player2Cemetery;
     }
 
+    private bool IsOnLastRow(Yokai yokai)
+    {
+        return yokai.PlayerIndex == 1 ? (yokai.CurrentPosition.y == _format.y - 1) : (yokai.CurrentPosition.y == 0);
+    }
+
     #endregion
 
 
@@ -353,7 +358,7 @@ public class Board : MonoBehaviour
         Yokai yokai = GetYokaiAtPosition(input.newPosition);
         if (yokai != null)
         {
-            MoveYokaiToCemetery(yokai);
+            SendYokaiToCemetery(yokai);
         }
 
         SetYokaiNewPosition(input.yokai, input.newPosition, onComplete);
@@ -364,15 +369,37 @@ public class Board : MonoBehaviour
 
     private void SetYokaiNewPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
     {
-        if (IsPositionValid(yokai.CurrentPosition))
-            SetYokaiIndexAtPosition(0, yokai.CurrentPosition);
-        else
+        bool parachute = !IsPositionValid(yokai.CurrentPosition);
+        if (parachute)
             RemoveFromCemetery(yokai);
+        else
+            SetYokaiIndexAtPosition(0, yokai.CurrentPosition);
 
         yokai.CurrentPosition = newPosition;
         SetYokaiIndexAtPosition(yokai.YokaiIndex, newPosition);
 
+        if (!parachute && IsOnLastRow(yokai))
+        {
+            yokai.OnArriveOnLastRow();
+        }
+
         MoveYokaiToPosition(yokai, newPosition, onComplete);
+    }
+
+    private void SendYokaiToCemetery(Yokai yokai)
+    {
+        yokai.PlayerIndex = yokai.PlayerIndex == 1 ? 2 : 1;
+
+        yokai.OnSentToCemetery();
+        AddToCemetery(yokai);
+        yokai.CurrentPosition = Vector2Int.down;
+
+        MoveYokaiToCemetery(yokai);
+
+        if (yokai.IsKing)
+        {
+            GameManager.Winner(yokai.PlayerIndex);
+        }
     }
 
     #endregion
@@ -421,16 +448,7 @@ public class Board : MonoBehaviour
     }
     private void MoveYokaiToCemetery(Yokai yokai)
     {
-        yokai.PlayerIndex = yokai.PlayerIndex == 1 ? 2 : 1;
-
-        AddToCemetery(yokai);
-        yokai.CurrentPosition = Vector2Int.down;
         MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex));
-
-        if (yokai.IsKing)
-        {
-            GameManager.Winner(yokai.PlayerIndex);
-        }
     }
 
     private void MoveYokaiToAnchor(Yokai yokai, Transform anchor, Action onComplete = null)

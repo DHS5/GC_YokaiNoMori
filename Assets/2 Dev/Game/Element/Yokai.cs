@@ -126,27 +126,29 @@ public class Yokai : MonoBehaviour,
 
     public Vector2Int CurrentPosition { get; set; }
 
-    private List<Vector2Int> _validDeltas;
+    private List<Vector2Int> _validDeltas = new();
     public List<Vector2Int> ValidDeltas
     {
         get
         {
-            if (_validDeltas == null) _validDeltas = ComputeDeltas();
+            if (_validDeltas.Count == 0) ComputeDeltas();
             return _validDeltas;
         }
     }
 
-    private List<Vector2Int> ComputeDeltas()
+    private void ComputeDeltas()
     {
-        if (PlayerIndex == 1) return data.GetValidDeltas();
-
-        List<Vector2Int> deltas = new();
-        foreach (var delta in data.GetValidDeltas())
+        if (PlayerIndex == 1)
         {
-            deltas.Add(-delta);
+            _validDeltas = data.GetValidDeltas(_isOnSecondFace);
+            return;
         }
 
-        return deltas;
+        _validDeltas.Clear();
+        foreach (var delta in data.GetValidDeltas(_isOnSecondFace))
+        {
+            _validDeltas.Add(-delta);
+        }
     }
 
     public bool CanEat(Vector2Int position)
@@ -157,12 +159,44 @@ public class Yokai : MonoBehaviour,
 
     #endregion
 
+    #region Second Face
+
+    private bool _isOnSecondFace = false;
+    public void OnArriveOnLastRow()
+    {
+        if (data.HasSecondFace)
+        {
+            _isOnSecondFace = true;
+            SetSprite();
+            ComputeDeltas();
+        }
+    }
+
+    #endregion
+
+    #region Cemetery
+    
+    public void OnSentToCemetery()
+    {
+        if (_isOnSecondFace)
+        {
+            _isOnSecondFace = false;
+            SetSprite();
+            ComputeDeltas();
+        }
+    }
+
+    #endregion
+
 
     #region Appearance
 
     private void SetSprite()
     {
-        if (mainSpriteRenderer != null && data != null) mainSpriteRenderer.sprite = data.Sprite;
+        if (mainSpriteRenderer != null && data != null)
+        {
+            mainSpriteRenderer.sprite = data.GetSprite(_isOnSecondFace);
+        }
     }
     private void SetOutline()
     {

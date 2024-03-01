@@ -20,6 +20,7 @@ public class ControllerManager : MonoBehaviour
         if (Instance != null)
         {
             Instance.isInGameScene = isInGameScene;
+            Destroy(gameObject);
             return;
         }
         Instance = this;
@@ -45,13 +46,20 @@ public class ControllerManager : MonoBehaviour
 
     #region Core Behaviour
 
-    private void Start()
+    private void OnEnable()
     {
-        if (Instance != this)
-        {
-            if (Instance.isInGameScene) Instance.CreateControllers();
-            Destroy(gameObject);
-        }
+        if (Instance == this)
+            GameManager.OnGameStart += OnGameStart;
+    }
+    private void OnDisable()
+    {
+        if (Instance == this)
+            GameManager.OnGameStart -= OnGameStart;
+    }
+
+    private void OnGameStart()
+    {
+        if (isInGameScene) Instance.CreateControllers();
     }
 
     #endregion

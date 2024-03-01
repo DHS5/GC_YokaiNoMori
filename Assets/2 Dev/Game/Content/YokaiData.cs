@@ -27,10 +27,21 @@ public class YokaiData : ScriptableObject
     public bool IsKing => isKing;
     public int Index => index;
     public string DisplayName => displayName;
-    public Sprite Sprite => sprite;
     public Vector2Int StartPosition => startPosition;
 
-    public List<Vector2Int> GetValidDeltas() => baseMovementGrid.ValidDeltas;
+    public bool HasSecondFace => hasSecondFace;
+
+    public Sprite GetSprite(bool secondFace)
+    {
+        if (!secondFace) return sprite;
+        return secondSprite;
+    }
+
+    public List<Vector2Int> GetValidDeltas(bool secondFace)
+    {
+        if (HasSecondFace && secondFace) return secondMovementGrid.ValidDeltas;
+        return baseMovementGrid.ValidDeltas;
+    }
 
 
 #if UNITY_EDITOR
