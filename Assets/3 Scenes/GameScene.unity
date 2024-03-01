@@ -230,7 +230,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 3.5
+  orthographic size: 3
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -490,11 +490,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 439203747068954609, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.5330188
       objectReference: {fileID: 0}
     - target: {fileID: 439203747068954609, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.76161104
       objectReference: {fileID: 0}
     - target: {fileID: 1144242016743445500, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -502,11 +502,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1363569472481926190, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.4141153
       objectReference: {fileID: 0}
     - target: {fileID: 1363569472481926190, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.569107
       objectReference: {fileID: 0}
     - target: {fileID: 1607418310717082910, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -514,11 +514,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1727148342101570335, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.5330188
       objectReference: {fileID: 0}
     - target: {fileID: 1727148342101570335, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.76161104
       objectReference: {fileID: 0}
     - target: {fileID: 1875676165050479688, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -574,11 +574,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4063974502253866546, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.5330188
       objectReference: {fileID: 0}
     - target: {fileID: 4063974502253866546, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.76161104
       objectReference: {fileID: 0}
     - target: {fileID: 4248034948152530773, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_LocalPosition.z
@@ -586,11 +586,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4956095441076067194, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.4141153
       objectReference: {fileID: 0}
     - target: {fileID: 4956095441076067194, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.569107
       objectReference: {fileID: 0}
     - target: {fileID: 5890342714182237894, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Name
@@ -622,11 +622,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9141280292043491961, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.4141153
       objectReference: {fileID: 0}
     - target: {fileID: 9141280292043491961, guid: db9da368c952469488c3ee786964b9ad, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.569107
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
