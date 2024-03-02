@@ -44,9 +44,9 @@ public abstract class Controller : MonoBehaviour
 
     public abstract void PrepareInput();
 
-    protected void SendInput(Player.Input input)
+    protected void SendInput(Move move)
     {
-        GameManager.PlayerInput(input);
+        GameManager.PlayerInput(move);
     }
 
     #endregion

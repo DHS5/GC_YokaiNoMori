@@ -370,24 +370,24 @@ public class Board : MonoBehaviour
 
     #region Board Modification
 
-    public static void TryMakeMove(Player.Input input, Action onComplete)
+    public static void TryMakeMove(Move move, Action onComplete)
     {
         if (Exist())
         {
-            Instance.MakeMove(input, onComplete);
+            Instance.MakeMove(move, onComplete);
         }
     }
-    private void MakeMove(Player.Input input, Action onComplete)
+    private void MakeMove(Move move, Action onComplete)
     {
         HideOptions();
 
-        Yokai yokai = GetYokaiAtPosition(input.newPosition);
+        Yokai yokai = GetYokaiAtPosition(move.newPosition);
         if (yokai != null)
         {
             SendYokaiToCemetery(yokai);
         }
 
-        SetYokaiNewPosition(input.yokai, input.newPosition, onComplete);
+        SetYokaiNewPosition(move.yokai, move.newPosition, onComplete);
 
         BoardRegister.Register();
         //DebugBoard();

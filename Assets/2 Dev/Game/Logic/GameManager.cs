@@ -95,14 +95,14 @@ public class GameManager : MonoBehaviour
     }
     
 
-    public static void PlayerInput(Player.Input input)
+    public static void PlayerInput(Move move)
     {
         if (Exist())
         {
-            Instance.OnPlayerInput(input);
+            Instance.OnPlayerInput(move);
         }
     }
-    private void OnPlayerInput(Player.Input input)
+    private void OnPlayerInput(Move move)
     {
         // Deactivate input
         EnablePhysicInteractions(false);
@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour
         OnSetTurn?.Invoke(CurrentPlayer);
 
         // Effectuate movement
-        Board.TryMakeMove(input, CheckForWinner);
+        Board.TryMakeMove(move, CheckForWinner);
     }
 
     private void CheckForWinner()
@@ -131,7 +131,14 @@ public class GameManager : MonoBehaviour
     private void ChangeSide()
     {
         // Rotate camera
-        RotateCamera(ChangeTurn);
+        if (ControllerManager.CurrentMode == ControllerManager.Mode.HUMAN_v_HUMAN)
+        {
+            RotateCamera(ChangeTurn);
+        }
+        else
+        {
+            ChangeTurn();
+        }
     }
 
 
@@ -157,7 +164,7 @@ public class GameManager : MonoBehaviour
 
     #region Game Rules
 
-    private bool HasWinner(int[,] board, out int winner)
+    public static bool HasWinner(int[,] board, out int winner)
     {
         var format = Board.GetFormat();
         var formatX = format.x;
@@ -217,7 +224,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    private int CheckPlayerWinner(int playerIndex, int[,] board, int lineToSearch, int columnNumber)
+    public static int CheckPlayerWinner(int playerIndex, int[,] board, int lineToSearch, int columnNumber)
     {
         Yokai yokai;
         bool foundKing = false;

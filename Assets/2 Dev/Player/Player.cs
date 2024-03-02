@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    #region Input Struct
-
-    public struct Input
-    {
-        public Yokai yokai;
-        public Vector2Int newPosition;
-    }
-
-    #endregion
-
     #region Global Members
 
     [Header("Player")]

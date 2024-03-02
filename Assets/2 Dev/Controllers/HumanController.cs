@@ -93,7 +93,7 @@ public class HumanController : Controller
 
     #region Input
 
-    private Player.Input _input;
+    private Move _input = new();
 
     private bool _isWaitingForInput;
     private bool _hasYokai;

@@ -42,6 +42,8 @@ public class ControllerManager : MonoBehaviour
     [SerializeField] private GameObject humanControllerPrefab;
     [SerializeField] private GameObject aiControllerPrefab;
 
+    public static Mode CurrentMode => Instance.mode;
+
     #endregion
 
     #region Core Behaviour
@@ -129,7 +131,7 @@ public class ControllerManager : MonoBehaviour
     }
     private AIController InstantiateAIController()
     {
-        return Instantiate(humanControllerPrefab, controllerContainer).GetComponent<AIController>();
+        return Instantiate(aiControllerPrefab, controllerContainer).GetComponent<AIController>();
     }
 
     #endregion
