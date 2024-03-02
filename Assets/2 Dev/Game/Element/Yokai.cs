@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -69,18 +68,19 @@ public class Yokai : MonoBehaviour,
     private bool _isHovered;
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (GameManager.CurrentPlayer == PlayerIndex)
+        if (GameManager.CurrentPlayer == PlayerIndex && _hasValidNextPositions)
             HumanController.YokaiInput(this, OnSelected);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         _isHovered = true;
-        SetOutline();
         if (GameManager.CurrentPlayer == PlayerIndex)
         {
-            Board.TryShowOptions(this);
+            if (!_computedNextPositions) Board.TryComputeNextPositions(this);
+            if (_hasValidNextPositions) Board.TryShowNextPositions(_nextPositions);
         }
+        SetOutline();
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -101,6 +101,8 @@ public class Yokai : MonoBehaviour,
     private void OnSetTurn(int _playerIndex)
     {
         _isSelectable = _playerIndex == PlayerIndex;
+        _computedNextPositions = false;
+        _hasValidNextPositions = false;
         SetOutline();
     }
     private void CheckSelectability()
@@ -157,6 +159,16 @@ public class Yokai : MonoBehaviour,
         return ValidDeltas.Contains(delta);
     }
 
+    private bool _computedNextPositions = false;
+    private bool _hasValidNextPositions = false;
+    private List<Vector2Int> _nextPositions = new();
+    public void SetValidNextPositions(List<Vector2Int> nextPositions)
+    {
+        _computedNextPositions = true;
+        _nextPositions = new(nextPositions);
+        _hasValidNextPositions = _nextPositions.Count > 0;
+    }
+
     #endregion
 
     #region Second Face
@@ -201,7 +213,7 @@ public class Yokai : MonoBehaviour,
     private void SetOutline()
     {
         outlineSpriteRenderer.enabled = _isSelectable || IsSelected;
-        outlineSpriteRenderer.color = IsSelected ? selectedColor : _isHovered ? hoveredColor : Color.white;
+        outlineSpriteRenderer.color = IsSelected ? selectedColor : !_isHovered ? Color.white : _hasValidNextPositions ? hoveredColor : Color.grey;
     }
 
     #endregion

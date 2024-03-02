@@ -84,8 +84,8 @@ public class Board : MonoBehaviour
     [Header("Board Elements")]
     [SerializeField] private Mode mode;
     [SerializeField] private BoardStructure4x3 structure;
-    [SerializeField] private Transform player1Cemetery;
-    [SerializeField] private Transform player2Cemetery;
+    [SerializeField] private Transform[] player1Cemetery;
+    [SerializeField] private Transform[] player2Cemetery;
 
     [Space(10f)]
 
@@ -251,7 +251,11 @@ public class Board : MonoBehaviour
     
     private Transform GetYokaiCemetery(int playerIndex)
     {
-        return playerIndex == 1 ? player1Cemetery : player2Cemetery;
+        return GetYokaiCemetery(playerIndex, _cemetery[playerIndex].Count);
+    }
+    private Transform GetYokaiCemetery(int playerIndex, int cemeteryIndex)
+    {
+        return playerIndex == 1 ? player1Cemetery[cemeteryIndex] : player2Cemetery[cemeteryIndex];
     }
 
     private bool IsOnLastRow(Yokai yokai)
@@ -264,19 +268,19 @@ public class Board : MonoBehaviour
 
     #region Board Hint
 
-    public static void TryShowOptions(Yokai yokai)
+    public static void TryComputeNextPositions(Yokai yokai)
     {
         if (Exist())
         {
-            Instance.ShowOptions(yokai);
+            Instance.ComputeNextPositions(yokai);
         }
     }
-    private void ShowOptions(Yokai yokai)
+    private void ComputeNextPositions(Yokai yokai)
     {
         Vector2Int pos = yokai.CurrentPosition;
         if (pos == Vector2Int.down)
         {
-            ShowAllEmpty();
+            yokai.SetValidNextPositions(GetAllEmpty());
             return;
         }
 
@@ -292,17 +296,32 @@ public class Board : MonoBehaviour
             }
         }
 
+        yokai.SetValidNextPositions(validPositions);
+    }
+    public static void TryShowNextPositions(List<Vector2Int> nextPositions)
+    {
+        if (Exist())
+        {
+            Instance.ShowNextPositions(nextPositions);
+        }
+    }
+    private void ShowNextPositions(List<Vector2Int> nextPositions)
+    {
         BoardPiece boardPiece;
-        bool around;
+        //bool around;
         for (int line = 0; line < _format.y; line++)
         {
             for (int column = 0; column < _format.x; column++)
             {
                 boardPiece = structure.Get(column, line);
-                around = AreAround(pos, boardPiece.Position);
-                if (around)
+                //around = AreAround(pos, boardPiece.Position);
+                //if (around)
+                //{
+                //    boardPiece.SetState(validPositions.Contains(boardPiece.Position) ? BoardPiece.State.VALID : BoardPiece.State.UNVALID);
+                //}
+                if (nextPositions.Contains(boardPiece.Position))
                 {
-                    boardPiece.SetState(validPositions.Contains(boardPiece.Position) ? BoardPiece.State.VALID : BoardPiece.State.UNVALID);
+                    boardPiece.SetState(BoardPiece.State.VALID);
                 }
                 else
                 {
@@ -311,16 +330,23 @@ public class Board : MonoBehaviour
             }
         }
     }
-    private void ShowAllEmpty()
+
+    private List<Vector2Int> GetAllEmpty()
     {
+        List<Vector2Int> emptyPositions = new();
+        Vector2Int pos;
         for (int line = 0; line < _format.y; line++)
         {
             for (int column = 0; column < _format.x; column++)
             {
-                structure.Get(column, line)
-                    .SetState(IsEmpty(new Vector2Int(column, line)) ? BoardPiece.State.VALID : BoardPiece.State.UNVALID);
+                pos = new Vector2Int(column, line);
+                if (IsEmpty(pos))
+                {
+                    emptyPositions.Add(pos);
+                }
             }
         }
+        return emptyPositions;
     }
     public static void TryHideOptions()
     {
@@ -391,10 +417,10 @@ public class Board : MonoBehaviour
         yokai.PlayerIndex = yokai.PlayerIndex == 1 ? 2 : 1;
 
         yokai.OnSentToCemetery();
-        AddToCemetery(yokai);
         yokai.CurrentPosition = Vector2Int.down;
 
         MoveYokaiToCemetery(yokai);
+        AddToCemetery(yokai);
 
         if (yokai.IsKing)
         {
@@ -444,16 +470,16 @@ public class Board : MonoBehaviour
 
     private void MoveYokaiToPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
     {
-        MoveYokaiToAnchor(yokai, GetBoardPiece(newPosition).transform, onComplete);
+        MoveYokaiToAnchor(yokai, GetBoardPiece(newPosition).transform.position, onComplete);
     }
     private void MoveYokaiToCemetery(Yokai yokai)
     {
-        MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex));
+        MoveYokaiToAnchor(yokai, GetYokaiCemetery(yokai.PlayerIndex).position);
     }
 
-    private void MoveYokaiToAnchor(Yokai yokai, Transform anchor, Action onComplete = null)
+    private void MoveYokaiToAnchor(Yokai yokai, Vector3 anchor, Action onComplete = null)
     {
-        yokai.transform.DOMove(anchor.position, yokaiMoveDuration);
+        yokai.transform.DOMove(anchor, yokaiMoveDuration);
         yokai.transform.DORotate(GetYokaiRotation(yokai.PlayerIndex), yokaiMoveDuration);
 
         if (onComplete != null)
@@ -479,6 +505,14 @@ public class Board : MonoBehaviour
     private void RemoveFromCemetery(Yokai yokai)
     {
         _cemetery[yokai.PlayerIndex].Remove(yokai);
+
+        if (_cemetery.TryGetValue(yokai.PlayerIndex, out List<Yokai> list))
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                MoveYokaiToAnchor(list[i], GetYokaiCemetery(yokai.PlayerIndex, i).position);
+            }
+        }
     }
 
     #endregion
