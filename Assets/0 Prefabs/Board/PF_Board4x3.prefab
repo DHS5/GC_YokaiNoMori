@@ -470,7 +470,7 @@ GameObject:
   - component: {fileID: 3778460563996957905}
   - component: {fileID: 5811856793704736570}
   m_Layer: 0
-  m_Name: PF_Board
+  m_Name: PF_Board4x3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -511,7 +511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  structure:
+  structure4x3:
     line1:
       leftPiece: {fileID: 6930327614594657682}
       centerPiece: {fileID: 8488141507913533990}
@@ -528,6 +528,43 @@ MonoBehaviour:
       leftPiece: {fileID: 5678339397279114201}
       centerPiece: {fileID: 872993493422488517}
       rightPiece: {fileID: 4674394399754227343}
+  structure6x5:
+    line1:
+      leftPiece: {fileID: 0}
+      leftCenterPiece: {fileID: 0}
+      centerPiece: {fileID: 0}
+      rightCenterPiece: {fileID: 0}
+      rightPiece: {fileID: 0}
+    line2:
+      leftPiece: {fileID: 0}
+      leftCenterPiece: {fileID: 0}
+      centerPiece: {fileID: 0}
+      rightCenterPiece: {fileID: 0}
+      rightPiece: {fileID: 0}
+    line3:
+      leftPiece: {fileID: 0}
+      leftCenterPiece: {fileID: 0}
+      centerPiece: {fileID: 0}
+      rightCenterPiece: {fileID: 0}
+      rightPiece: {fileID: 0}
+    line4:
+      leftPiece: {fileID: 0}
+      leftCenterPiece: {fileID: 0}
+      centerPiece: {fileID: 0}
+      rightCenterPiece: {fileID: 0}
+      rightPiece: {fileID: 0}
+    line5:
+      leftPiece: {fileID: 0}
+      leftCenterPiece: {fileID: 0}
+      centerPiece: {fileID: 0}
+      rightCenterPiece: {fileID: 0}
+      rightPiece: {fileID: 0}
+    line6:
+      leftPiece: {fileID: 0}
+      leftCenterPiece: {fileID: 0}
+      centerPiece: {fileID: 0}
+      rightCenterPiece: {fileID: 0}
+      rightPiece: {fileID: 0}
   player1Cemetery:
   - {fileID: 7975446918310047912}
   - {fileID: 139034461774444988}

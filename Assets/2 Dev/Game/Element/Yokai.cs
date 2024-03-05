@@ -194,8 +194,8 @@ public class Yokai : MonoBehaviour,
         {
             _isOnSecondFace = false;
             SetSprite();
-            ComputeDeltas();
         }
+        ComputeDeltas();
     }
 
     #endregion

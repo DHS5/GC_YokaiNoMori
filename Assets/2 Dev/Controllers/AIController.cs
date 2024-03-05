@@ -7,7 +7,7 @@ public class AIController : Controller
 {
     public override void PrepareInput()
     {
-        Vector2Int format = Board.GetFormat();
+        Vector2Int format = Board.Format;
         SendInput(AI.ComputeMove(Board.GetCurrentBoard(), format.x, format.y));
     }
 

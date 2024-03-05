@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour
 
     public static bool HasWinner(int[,] board, out int winner)
     {
-        var format = Board.GetFormat();
+        var format = Board.Format;
         var formatX = format.x;
         var formatY = format.y;
         

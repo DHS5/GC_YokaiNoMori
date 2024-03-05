@@ -2,9 +2,8 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
+using UnityEngine.UIElements;
 
 public class Board : MonoBehaviour
 {
@@ -32,10 +31,44 @@ public class Board : MonoBehaviour
         F5x6 = 1
     }
 
-    #region Structs
+    #region Structure Base
+
+    public interface IBoardLine
+    {
+        public BoardPiece Get(int index);
+    }
+    public interface IBoardStructure
+    {
+        public Vector2Int Format { get; }
+
+        public BoardPiece Get(Vector2Int position);
+        public BoardPiece Get(int column, int line);
+
+        public bool IsPromotionZoneForPlayer(Vector2Int position, int playerIndex);
+
+        public bool IsPositionValid(Vector2Int position)
+        {
+            return IsPositionValid(position.x, position.y);
+        }
+        public bool IsPositionValid(int posX, int posY)
+        {
+            return posX >= 0 && posX < Format.x && posY >= 0 && posY < Format.y;
+        }
+
+        public Vector2Int GetCorrectCoordsForPlayer(Vector2Int position, int playerIndex)
+        {
+            if (playerIndex == 1) return position;
+
+            return new Vector2Int(Format.x - 1 - position.x, Format.y - 1 - position.y);
+        }
+    }
+
+    #endregion
+
+    #region Structure 4x3
 
     [Serializable]
-    private struct BoardLine4x3
+    private struct BoardLine4x3 : IBoardLine
     {
         [SerializeField] private BoardPiece leftPiece;
         [SerializeField] private BoardPiece centerPiece;
@@ -55,12 +88,14 @@ public class Board : MonoBehaviour
     }
     
     [Serializable]
-    private struct BoardStructure4x3
+    private struct BoardStructure4x3 : IBoardStructure
     {
         [SerializeField] private BoardLine4x3 line1;
         [SerializeField] private BoardLine4x3 line2;
         [SerializeField] private BoardLine4x3 line3;
         [SerializeField] private BoardLine4x3 line4;
+
+        public Vector2Int Format => new Vector2Int(3, 4);
 
         public BoardPiece Get(Vector2Int position) => Get(position.x, position.y);
         public BoardPiece Get(int column, int line)
@@ -75,6 +110,75 @@ public class Board : MonoBehaviour
             Debug.LogError("Invalid index");
             return null;
         }
+
+        public bool IsPromotionZoneForPlayer(Vector2Int position, int playerIndex)
+        {
+            return (position.y == 3 && playerIndex == 1)
+                || (position.y == 0 && playerIndex == 2);
+        }
+    }
+
+    #endregion
+
+    #region Structure 6x5
+
+    [Serializable]
+    private struct BoardLine6x5 : IBoardLine
+    {
+        [SerializeField] private BoardPiece leftPiece;
+        [SerializeField] private BoardPiece leftCenterPiece;
+        [SerializeField] private BoardPiece centerPiece;
+        [SerializeField] private BoardPiece rightCenterPiece;
+        [SerializeField] private BoardPiece rightPiece;
+
+        public BoardPiece Get(int index)
+        {
+            switch (index)
+            {
+                case 0: return leftPiece;
+                case 1: return leftCenterPiece;
+                case 2: return centerPiece;
+                case 3: return rightCenterPiece;
+                case 4: return rightPiece;
+            }
+            Debug.LogError("Invalid index");
+            return null;
+        }
+    }
+
+    [Serializable]
+    private struct BoardStructure6x5 : IBoardStructure
+    {
+        [SerializeField] private BoardLine6x5 line1;
+        [SerializeField] private BoardLine6x5 line2;
+        [SerializeField] private BoardLine6x5 line3;
+        [SerializeField] private BoardLine6x5 line4;
+        [SerializeField] private BoardLine6x5 line5;
+        [SerializeField] private BoardLine6x5 line6;
+
+        public Vector2Int Format => new Vector2Int(5, 6);
+
+        public BoardPiece Get(Vector2Int position) => Get(position.x, position.y);
+        public BoardPiece Get(int column, int line)
+        {
+            switch (line)
+            {
+                case 0: return line1.Get(column);
+                case 1: return line2.Get(column);
+                case 2: return line3.Get(column);
+                case 3: return line4.Get(column);
+                case 4: return line5.Get(column);
+                case 5: return line6.Get(column);
+            }
+            Debug.LogError("Invalid index");
+            return null;
+        }
+
+        public bool IsPromotionZoneForPlayer(Vector2Int position, int playerIndex)
+        {
+            return ((position.y == 4 || position.y == 5) && playerIndex == 1)
+                || ((position.y == 0 || position.y == 1) && playerIndex == 2);
+        }
     }
 
     #endregion
@@ -83,7 +187,8 @@ public class Board : MonoBehaviour
 
     [Header("Board Elements")]
     [SerializeField] private Mode mode;
-    [SerializeField] private BoardStructure4x3 structure;
+    [SerializeField] private BoardStructure4x3 structure4x3;
+    [SerializeField] private BoardStructure6x5 structure6x5;
     [SerializeField] private Transform[] player1Cemetery;
     [SerializeField] private Transform[] player2Cemetery;
 
@@ -98,19 +203,22 @@ public class Board : MonoBehaviour
     [Header("Animations")]
     [SerializeField] private float yokaiMoveDuration = 1f;
 
+
+    private IBoardStructure Structure => mode == Mode.F3x4 ? structure4x3 : structure6x5;
+
     #endregion
 
     #region Board Structure
 
     private void RepositionBoardPieces()
     {
-        for (int line = 0; line < 4; line++)
+        for (int line = 0; line < Structure.Format.y; line++)
         {
-            for (int column = 0; column < 3; column++)
+            for (int column = 0; column < Structure.Format.x; column++)
             {
-                structure.Get(column, line).transform.position 
-                    = new Vector3((column - 1) * (boardPieceSize.x + boardPieceSpacing.x),
-                    (line - 1.5f) * (boardPieceSize.y + boardPieceSpacing.y),
+                Structure.Get(column, line).transform.position 
+                    = new Vector3((column - (Structure.Format.x / 2)) * (boardPieceSize.x + boardPieceSpacing.x),
+                    (line - (Structure.Format.y / 2 - 0.5f)) * (boardPieceSize.y + boardPieceSpacing.y),
                     0);
             }
         }
@@ -118,23 +226,25 @@ public class Board : MonoBehaviour
 
     private void SetBoardPiecesPosition()
     {
-        for (int line = 0; line < 4; line++)
+        for (int line = 0; line < Structure.Format.y; line++)
         {
-            for (int column = 0; column < 3; column++)
+            for (int column = 0; column < Structure.Format.x; column++)
             {
-                structure.Get(column, line).SetPosition(new Vector2Int(column, line));
+                Structure.Get(column, line).SetPosition(new Vector2Int(column, line));
             }
         }
     }
 
     private BoardPiece GetBoardPiece(Vector2Int position)
     {
-        return structure.Get(position.x, position.y);
+        return Structure.Get(position.x, position.y);
     }
     private BoardPiece GetBoardPiece(int posX, int posY)
     {
-        return structure.Get(posX, posY);
+        return Structure.Get(posX, posY);
     }
+
+    public static Vector2Int Format => Instance.Structure.Format;
 
     #endregion
 
@@ -147,16 +257,14 @@ public class Board : MonoBehaviour
 
     private void InitBoard()
     {
-        // Init data structures
-        _format = Format(mode);
-        _board = new int[_format.x, _format.y];
+        _board = new int[Format.x, Format.y];
         InitCemetery();
         _yokaiDico.Clear();
         
         // Fill with 0
-        for (int line = 0; line < _format.y; line++)
+        for (int line = 0; line < Format.y; line++)
         {
-            for (int column = 0; column < _format.x; column++)
+            for (int column = 0; column < Format.x; column++)
             {
                 _board[column, line] = 0;
             }
@@ -170,7 +278,7 @@ public class Board : MonoBehaviour
             {
                 Debug.LogError("Yokai index redundance : " + yokai.YokaiIndex);
             }
-            pos = GetCoords(yokai.PlayerIndex, yokai.StartPosition);
+            pos = Structure.GetCorrectCoordsForPlayer(yokai.StartPosition, yokai.PlayerIndex);
             SetYokaiIndexAtPosition(yokai.YokaiIndex, pos);
             yokai.CurrentPosition = pos;
 
@@ -183,15 +291,13 @@ public class Board : MonoBehaviour
 
     public static int[,] GetCurrentBoard()
     {
-        if (Exist()) return Instance._board;
-        return null;
+        return Instance._board;
     }
 
     public static Yokai GetYokaiByIndex(int index)
     {
         if (index == 0) return null;
-        if (Exist()) return Instance._yokaiDico[index];
-        return null;
+        return Instance._yokaiDico[index];
     }
 
     private int GetYokaiIndexAtPosition(Vector2Int position)
@@ -204,13 +310,9 @@ public class Board : MonoBehaviour
     }
     public static Yokai GetYokaiAtPosition(Vector2Int position)
     {
-        if (Exist())
-        {
-            int yokaiIndex = Instance.GetYokaiIndexAtPosition(position);
-            if (yokaiIndex == 0) return null;
-            return Instance._yokaiDico[yokaiIndex];
-        }
-        return null;
+        int yokaiIndex = Instance.GetYokaiIndexAtPosition(position);
+        if (yokaiIndex == 0) return null;
+        return Instance._yokaiDico[yokaiIndex];
     }
     public static Yokai GetYokaiAtPosition(int posX, int posY)
     {
@@ -220,29 +322,6 @@ public class Board : MonoBehaviour
     #endregion
 
     #region Board Format
-
-    private Vector2Int _format;
-    private Vector2Int Format(Mode mode)
-    {
-        return mode switch
-        {
-            Mode.F3x4 => new Vector2Int(3, 4),
-            Mode.F5x6 => new Vector2Int(5, 6),
-            _ => throw new NotImplementedException(),
-        };
-    }
-    public static Vector2Int GetFormat()
-    {
-        if (Exist()) return Instance._format;
-        return Vector2Int.zero;
-    }
-
-    private Vector2Int GetCoords(int playerIndex, Vector2Int position)
-    {
-        if (playerIndex == 1) return position;
-
-        return new Vector2Int(_format.x - 1 - position.x, _format.y - 1 - position.y);
-    }
 
     private Vector3 GetYokaiRotation(int playerIndex)
     {
@@ -258,11 +337,6 @@ public class Board : MonoBehaviour
         return playerIndex == 1 ? player1Cemetery[cemeteryIndex] : player2Cemetery[cemeteryIndex];
     }
 
-    private bool IsOnLastRow(Yokai yokai)
-    {
-        return yokai.PlayerIndex == 1 ? (yokai.CurrentPosition.y == _format.y - 1) : (yokai.CurrentPosition.y == 0);
-    }
-
     #endregion
 
 
@@ -270,10 +344,7 @@ public class Board : MonoBehaviour
 
     public static void TryComputeNextPositions(Yokai yokai)
     {
-        if (Exist())
-        {
-            Instance.ComputeNextPositions(yokai);
-        }
+        Instance.ComputeNextPositions(yokai);
     }
     private void ComputeNextPositions(Yokai yokai)
     {
@@ -285,7 +356,7 @@ public class Board : MonoBehaviour
         }
 
         List<Vector2Int> validPositions = new();
-
+        
         Vector2Int temp;
         foreach (var delta in yokai.ValidDeltas)
         {
@@ -300,25 +371,16 @@ public class Board : MonoBehaviour
     }
     public static void TryShowNextPositions(List<Vector2Int> nextPositions)
     {
-        if (Exist())
-        {
-            Instance.ShowNextPositions(nextPositions);
-        }
+        Instance.ShowNextPositions(nextPositions);
     }
     private void ShowNextPositions(List<Vector2Int> nextPositions)
     {
         BoardPiece boardPiece;
-        //bool around;
-        for (int line = 0; line < _format.y; line++)
+        for (int line = 0; line < Format.y; line++)
         {
-            for (int column = 0; column < _format.x; column++)
+            for (int column = 0; column < Format.x; column++)
             {
-                boardPiece = structure.Get(column, line);
-                //around = AreAround(pos, boardPiece.Position);
-                //if (around)
-                //{
-                //    boardPiece.SetState(validPositions.Contains(boardPiece.Position) ? BoardPiece.State.VALID : BoardPiece.State.UNVALID);
-                //}
+                boardPiece = GetBoardPiece(column, line);
                 if (nextPositions.Contains(boardPiece.Position))
                 {
                     boardPiece.SetState(BoardPiece.State.VALID);
@@ -335,9 +397,9 @@ public class Board : MonoBehaviour
     {
         List<Vector2Int> emptyPositions = new();
         Vector2Int pos;
-        for (int line = 0; line < _format.y; line++)
+        for (int line = 0; line < Format.y; line++)
         {
-            for (int column = 0; column < _format.x; column++)
+            for (int column = 0; column < Format.x; column++)
             {
                 pos = new Vector2Int(column, line);
                 if (IsEmpty(pos))
@@ -357,11 +419,11 @@ public class Board : MonoBehaviour
     }
     private void HideOptions()
     {
-        for (int line = 0; line < _format.y; line++)
+        for (int line = 0; line < Format.y; line++)
         {
-            for (int column = 0; column < _format.x; column++)
+            for (int column = 0; column < Format.x; column++)
             {
-                structure.Get(column, line).SetState(BoardPiece.State.NORMAL);
+                GetBoardPiece(column, line).SetState(BoardPiece.State.NORMAL);
             }
         }
     }
@@ -372,10 +434,7 @@ public class Board : MonoBehaviour
 
     public static void TryMakeMove(Move move, Action onComplete)
     {
-        if (Exist())
-        {
-            Instance.MakeMove(move, onComplete);
-        }
+        Instance.MakeMove(move, onComplete);
     }
     private void MakeMove(Move move, Action onComplete)
     {
@@ -390,7 +449,6 @@ public class Board : MonoBehaviour
         SetYokaiNewPosition(move.yokai, move.newPosition, onComplete);
 
         BoardRegister.Register();
-        //DebugBoard();
     }
 
     private void SetYokaiNewPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
@@ -404,7 +462,7 @@ public class Board : MonoBehaviour
         yokai.CurrentPosition = newPosition;
         SetYokaiIndexAtPosition(yokai.YokaiIndex, newPosition);
 
-        if (!parachute && IsOnLastRow(yokai))
+        if (!parachute && Structure.IsPromotionZoneForPlayer(yokai.CurrentPosition, yokai.PlayerIndex))
         {
             yokai.OnArriveOnLastRow();
         }
@@ -439,12 +497,11 @@ public class Board : MonoBehaviour
     }
     public static bool IsPositionValid(Vector2Int position)
     {
-        return IsPositionValid(position.x, position.y);
+        return Instance.Structure.IsPositionValid(position);
     }
     public static bool IsPositionValid(int posX, int posY)
     {
-        if (Exist()) return posX >= 0 && posX < Instance._format.x && posY >= 0 && posY < Instance._format.y;
-        return false;
+        return Instance.Structure.IsPositionValid(posX, posY);
     }
     public static bool AreAround(Vector2Int position1, Vector2Int position2)
     {
@@ -549,9 +606,9 @@ public class Board : MonoBehaviour
     private void DebugBoard()
     {
         StringBuilder sb = new();
-        for (int line = _format.y - 1; line >= 0; line--)
+        for (int line = Format.y - 1; line >= 0; line--)
         {
-            for (int column = 0; column < _format.x; column++)
+            for (int column = 0; column < Format.x; column++)
             {
                 sb.Append(GetYokaiIndexAtPosition(new Vector2Int(column, line)));
                 sb.Append(' ');
