@@ -36,10 +36,6 @@ public class GameManager : MonoBehaviour, IGameManager
     [SerializeField] private LayerMask boardLayer;
     [SerializeField] private LayerMask yokaiLayer;
 
-    [Header("Camera")]
-    [SerializeField] private Camera mainCamera;
-    [SerializeField] private float cameraRotationDuration = 2f;
-
     [Header("UI")]
     [SerializeField] private UIManager uiManager;
 
@@ -113,12 +109,12 @@ public class GameManager : MonoBehaviour, IGameManager
         // Deactivate input
         EnablePhysicInteractions(false);
 
+        // Effectuate movement
+        Board.TryMakeMove(move, CheckForWinner);
+
         // Set player to 0
         CurrentPlayer = 0;
         OnSetTurn?.Invoke(CurrentPlayer);
-
-        // Effectuate movement
-        Board.TryMakeMove(move, CheckForWinner);
     }
 
     private void CheckForWinner()
@@ -139,7 +135,7 @@ public class GameManager : MonoBehaviour, IGameManager
         // Rotate camera
         if (ControllerManager.CurrentMode == ControllerManager.Mode.HUMAN_v_HUMAN)
         {
-            RotateCamera(ChangeTurn);
+            Board.TryRotateBoard(ChangeTurn);
         }
         else
         {
@@ -292,15 +288,6 @@ public class GameManager : MonoBehaviour, IGameManager
     private void SetYokaiLayer()
     {
         physicsRaycaster.eventMask = yokaiLayer;
-    }
-
-    private Vector3 _currentCameraRotation;
-    private void RotateCamera(Action onComplete)
-    {
-        _currentCameraRotation = new Vector3(0, 0, _currentCameraRotation.z == 0 ? 180 : 0);
-        mainCamera.transform.DORotate(_currentCameraRotation, cameraRotationDuration);
-
-        DOVirtual.DelayedCall(cameraRotationDuration, () => onComplete?.Invoke());
     }
 
     #endregion

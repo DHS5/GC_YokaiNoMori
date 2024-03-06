@@ -237,6 +237,8 @@ public class Board : MonoBehaviour
     [SerializeField] private List<Yokai> yokaiList;
 
     [Header("Animations")]
+    [SerializeField] private Transform rotationPlatform;
+    [SerializeField] private float boardRotationDuration = 1f;
     [SerializeField] private float yokaiMoveDuration = 1f;
 
 
@@ -488,7 +490,8 @@ public class Board : MonoBehaviour
 
         SetYokaiNewPosition(move.yokai, move.newPosition, onComplete);
 
-        BoardRegister.Register();
+        if (GameManager.CurrentPlayer == 2)
+            BoardRegister.Register();
     }
 
     private void SetYokaiNewPosition(Yokai yokai, Vector2Int newPosition, Action onComplete = null)
@@ -577,12 +580,22 @@ public class Board : MonoBehaviour
     private void MoveYokaiToAnchor(Yokai yokai, Vector3 anchor, Action onComplete = null)
     {
         yokai.transform.DOMove(anchor, yokaiMoveDuration);
-        yokai.transform.DORotate(GetYokaiRotation(yokai.PlayerIndex), yokaiMoveDuration);
+        yokai.transform.DOLocalRotate(GetYokaiRotation(yokai.PlayerIndex), yokaiMoveDuration);
 
         if (onComplete != null)
         {
             DOVirtual.DelayedCall(yokaiMoveDuration, () => onComplete.Invoke());
         }
+    }
+
+    private Vector3 _currentBoardRotation;
+    public static void TryRotateBoard(Action onComplete) => Instance.RotateBoard(onComplete);
+    private void RotateBoard(Action onComplete)
+    {
+        _currentBoardRotation = new Vector3(0, 0, _currentBoardRotation.z == 0 ? 180 : 0);
+        rotationPlatform.DORotate(_currentBoardRotation, boardRotationDuration);
+
+        DOVirtual.DelayedCall(boardRotationDuration, () => onComplete?.Invoke());
     }
 
     #endregion

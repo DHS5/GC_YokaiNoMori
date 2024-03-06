@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -11,6 +12,28 @@ public class UIManager : MonoBehaviour
     [Header("UI Manager")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private TextMeshProUGUI winnerText;
+    [SerializeField] private TextMeshProUGUI playerText;
+
+    #endregion
+
+    #region Core Behaviour
+
+    private void OnEnable()
+    {
+        GameManager.OnSetTurn += OnSetTurn;
+    }
+    private void OnDisable()
+    {
+        GameManager.OnSetTurn -= OnSetTurn;
+    }
+
+    private void OnSetTurn(int playerIndex)
+    {
+        if (playerIndex > 0)
+        {
+            playerText.text = "Player : " + playerIndex;
+        }
+    }
 
     #endregion
 
@@ -18,7 +41,7 @@ public class UIManager : MonoBehaviour
 
     public void SetWinner(int winner)
     {
-        gameOverPanel.SetActive(true);
+        DOVirtual.DelayedCall(1f, () => gameOverPanel.SetActive(true));
         
         if (winner == 0)
         {

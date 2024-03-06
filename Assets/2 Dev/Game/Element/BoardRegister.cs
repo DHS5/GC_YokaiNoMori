@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 public static class BoardRegister
@@ -40,14 +39,14 @@ public static class BoardRegister
     public static bool CheckForRepetion()
     {
         int count = _boards.Count;
-        if (count < 9) return false;
+        if (count < 7) return false;
 
-        while (_boards.Count > 9)
+        while (_boards.Count > 7)
         {
             _boards.RemoveAt(0);
         }
 
-        return AreEqual(4, 8) && AreEqual(4,0);
+        return AreEqual(6, 4) && AreEqual(4, 2) && AreEqual(2,0);
     }
 
     public static bool AreEqual(int index1, int index2)
