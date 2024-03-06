@@ -12,7 +12,6 @@ public class YokaiData : ScriptableObject
     [SerializeField] private int index;
     [SerializeField] private string displayName;
     [SerializeField] private Sprite sprite;
-    [SerializeField] private Vector2Int startPosition;
 
     [Space(10f)]
 
@@ -30,7 +29,6 @@ public class YokaiData : ScriptableObject
     public bool IsKing => isKing;
     public int Index => index;
     public string DisplayName => displayName;
-    public Vector2Int StartPosition => startPosition;
 
     public bool HasSecondFace => hasSecondFace;
 

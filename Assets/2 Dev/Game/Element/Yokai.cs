@@ -13,6 +13,7 @@ public class Yokai : MonoBehaviour, IPawn,
     [Header("Yokai")]
     [SerializeField] private int playerIndex;
     [SerializeField] private YokaiData data;
+    [SerializeField] private Vector2Int startPosition;
 
     [Header("References")]
     [SerializeField] private SpriteRenderer mainSpriteRenderer;
@@ -29,7 +30,7 @@ public class Yokai : MonoBehaviour, IPawn,
     }
 
     public bool IsKing => data.IsKing;
-    public Vector2Int StartPosition => data.StartPosition;
+    public Vector2Int StartPosition => startPosition;
 
     private int _yokaiIndex;
     public int YokaiIndex
