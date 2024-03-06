@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 69816b8e9bdcba54db6258ad2599c6a2
+guid: d507e0fae95ff3345ab688a36f3ff4c7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,12 +43,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 150
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -108,28 +108,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: BoardPiece contour_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 163
-        height: 163
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 5, y: 5, z: 5, w: 5}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 45149d20c8aa8bd469096f611c2cfcb2
-      internalID: 1870791527
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -140,19 +119,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      BoardPiece contour_0: 1870791527
-      BoardPiece contour_1: -875471862
-      BoardPiece contour_10: -957118604
-      BoardPiece contour_11: 311911271
-      BoardPiece contour_2: 1072319840
-      BoardPiece contour_3: -250616536
-      BoardPiece contour_4: -451393721
-      BoardPiece contour_5: 1731558369
-      BoardPiece contour_6: 871786694
-      BoardPiece contour_7: 76707465
-      BoardPiece contour_8: -1921457427
-      BoardPiece contour_9: 1567959597
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

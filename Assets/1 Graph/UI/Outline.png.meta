@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 69816b8e9bdcba54db6258ad2599c6a2
+guid: 5db7bb9a376c68344a7208b84ee87791
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 150
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BoardPiece contour_0
+      name: Outline_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 163
-        height: 163
+        height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 5, y: 5, z: 5, w: 5}
@@ -124,8 +124,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45149d20c8aa8bd469096f611c2cfcb2
-      internalID: 1870791527
+      spriteID: 1c48f286a7054444cb1197cca5f7edf4
+      internalID: 340790097
       vertices: []
       indices: 
       edges: []
@@ -141,18 +141,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BoardPiece contour_0: 1870791527
-      BoardPiece contour_1: -875471862
-      BoardPiece contour_10: -957118604
-      BoardPiece contour_11: 311911271
-      BoardPiece contour_2: 1072319840
-      BoardPiece contour_3: -250616536
-      BoardPiece contour_4: -451393721
-      BoardPiece contour_5: 1731558369
-      BoardPiece contour_6: 871786694
-      BoardPiece contour_7: 76707465
-      BoardPiece contour_8: -1921457427
-      BoardPiece contour_9: 1567959597
+      Outline_0: 340790097
+      Outline_1: 1124569930
+      Outline_2: -2102871796
+      Outline_3: 469102494
+      Outline_4: 1018397357
+      Outline_5: -1936328278
+      Outline_6: -1715040600
+      Outline_7: -623901144
+      Outline_8: -1098500689
+      Outline_9: -158952231
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -40,6 +40,9 @@ public class GameManager : MonoBehaviour, IGameManager
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float cameraRotationDuration = 2f;
 
+    [Header("UI")]
+    [SerializeField] private UIManager uiManager;
+
 
     public static bool IsPlaying { get; private set; }
 
@@ -269,14 +272,7 @@ public class GameManager : MonoBehaviour, IGameManager
 
     public static void Winner(int playerIndex)
     {
-        if (playerIndex == 0)
-        {
-            Debug.Log("No Winner ! You suck !");
-        }
-        else
-        {
-            Debug.Log("Player " + playerIndex + " WIN !");
-        }
+        Instance.uiManager.SetWinner(playerIndex);
         IsPlaying = false;
     }
 
