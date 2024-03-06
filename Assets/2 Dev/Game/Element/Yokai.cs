@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using YokaiNoMori.Enumeration;
+using YokaiNoMori.Interface;
 
-public class Yokai : MonoBehaviour,
+public class Yokai : MonoBehaviour, IPawn,
     IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     #region Global Members
@@ -197,6 +199,36 @@ public class Yokai : MonoBehaviour,
         }
         ComputeDeltas();
     }
+
+    #endregion
+
+
+    #region IPawn
+
+    /// <summary>
+    /// Recovers all moves of the pawn concerned
+    /// </summary>
+    /// <returns>All possible directions (e.g. [0.1] for forward)</returns>
+    public List<Vector2Int> GetDirections() => ValidDeltas;
+
+    /// <summary>
+    /// Retrieves the owner of this pawn
+    /// </summary>
+    /// <returns>1 : Player 1 - 2 : Player 2</returns>
+    public ICompetitor GetCurrentOwner() => PlayerManager.GetPlayerByIndex(playerIndex);
+
+    /// <summary>
+    /// Retrieve the square on which the pawn is located
+    /// </summary>
+    /// <returns>null is no case</returns>
+    public IBoardCase GetCurrentBoardCase() => Board.GetBoardPiece(CurrentPosition);
+
+
+    /// <summary>
+    /// Retrieve pawn type
+    /// </summary>
+    /// <returns></returns>
+    public EPawnType GetPawnType() => data.PawnType;
 
     #endregion
 

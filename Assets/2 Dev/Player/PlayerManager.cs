@@ -62,5 +62,16 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public static Player GetPlayerByIndex(int playerIndex)
+    {
+        if (Instance == null)
+        {
+            Debug.LogError("No PlayerManager found in the scene");
+            return null;
+        }
+
+        return playerIndex == 1 ? Instance.player1 : Instance.player2;
+    }
+
     #endregion
 }

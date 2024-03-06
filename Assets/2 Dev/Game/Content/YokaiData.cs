@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YokaiNoMori.Enumeration;
 
 [CreateAssetMenu(fileName = "YK_", menuName = "Yokai Data")]
 public class YokaiData : ScriptableObject
 {
     [Header("Yokai Data")]
+    [SerializeField] private EPawnType pawnType;
     [SerializeField] private bool isKing;
     [SerializeField] private int index;
     [SerializeField] private string displayName;
@@ -24,6 +26,7 @@ public class YokaiData : ScriptableObject
     [SerializeField] private YokaiMovementGrid secondMovementGrid;
 
 
+    public EPawnType PawnType => pawnType;
     public bool IsKing => isKing;
     public int Index => index;
     public string DisplayName => displayName;

@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using YokaiNoMori.Interface;
 
-public class BoardPiece : MonoBehaviour,
+public class BoardPiece : MonoBehaviour, IBoardCase,
     IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public enum State
@@ -92,6 +93,25 @@ public class BoardPiece : MonoBehaviour,
     {
         //Debug.Log("On selected " + this, this);
     }
+
+    #endregion
+
+
+    #region IBoardCase
+
+    /// <summary>
+    /// Retrieves its position in a two-dimensional array.
+    /// [0,0] being the first cell at bottom left.
+    /// </summary>
+    /// <returns></returns>
+    public Vector2Int GetPosition() => Position;
+
+
+    /// <summary>
+    /// Retrieves the pawn on this case
+    /// </summary>
+    /// <returns></returns>
+    public IPawn GetPawnOnIt() => Board.GetYokaiAtPosition(Position);
 
     #endregion
 

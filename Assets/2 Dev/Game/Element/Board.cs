@@ -235,13 +235,13 @@ public class Board : MonoBehaviour
         }
     }
 
-    private BoardPiece GetBoardPiece(Vector2Int position)
+    public static BoardPiece GetBoardPiece(Vector2Int position)
     {
-        return Structure.Get(position.x, position.y);
+        return Instance.Structure.Get(position.x, position.y);
     }
-    private BoardPiece GetBoardPiece(int posX, int posY)
+    public static BoardPiece GetBoardPiece(int posX, int posY)
     {
-        return Structure.Get(posX, posY);
+        return Instance.Structure.Get(posX, posY);
     }
 
     public static Vector2Int Format => Instance.Structure.Format;
