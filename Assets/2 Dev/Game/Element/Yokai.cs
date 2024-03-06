@@ -209,7 +209,7 @@ public class Yokai : MonoBehaviour, IPawn,
     /// Recovers all moves of the pawn concerned
     /// </summary>
     /// <returns>All possible directions (e.g. [0.1] for forward)</returns>
-    public List<Vector2Int> GetDirections() => ValidDeltas;
+    public List<Vector2Int> GetDirections() => data.GetValidDeltas(_isOnSecondFace);
 
     /// <summary>
     /// Retrieves the owner of this pawn

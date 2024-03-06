@@ -86,7 +86,6 @@ public class Board : MonoBehaviour
                 case 1: return centerPiece;
                 case 2: return rightPiece;
             }
-            Debug.LogError("Invalid index");
             return null;
         }
 
@@ -116,7 +115,6 @@ public class Board : MonoBehaviour
                 case 2: return line3.Get(column);
                 case 3: return line4.Get(column);
             }
-            Debug.LogError("Invalid index");
             return null;
         }
 
@@ -162,7 +160,6 @@ public class Board : MonoBehaviour
                 case 3: return rightCenterPiece;
                 case 4: return rightPiece;
             }
-            Debug.LogError("Invalid index");
             return null;
         }
 
@@ -196,7 +193,6 @@ public class Board : MonoBehaviour
                 case 4: return line5.Get(column);
                 case 5: return line6.Get(column);
             }
-            Debug.LogError("Invalid index");
             return null;
         }
 

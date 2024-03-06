@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using YokaiNoMori.Enumeration;
+using YokaiNoMori.Interface;
 
 namespace Group15
 {
@@ -17,11 +19,50 @@ namespace Group15
 
     public class AICore
     {
+        #region AI Move
+
+        public class AIMove
+        {
+            #region Constructor
+
+            public AIMove(IPawn _yokai, Vector2Int _newPosition)
+            {
+                yokai = _yokai;
+                newPosition = _newPosition;
+                actionType = yokai.GetCurrentBoardCase() != null ? EActionType.MOVE : EActionType.PARACHUTE;
+            }
+
+            #endregion
+
+            #region Public Members
+
+            public IPawn yokai;
+            public Vector2Int newPosition;
+            public EActionType actionType;
+
+            #endregion
+        }
+
+        #endregion
+
         #region Constructor
-        public AICore(int playerIndex, AILevel level)
+        public AICore(int playerIndex, AILevel level, IGameManager gameManager)
         {
             FirstPlayer = playerIndex == 1;
+            Camp = FirstPlayer ? ECampType.PLAYER_ONE : ECampType.PLAYER_TWO;
             Level = level;
+            GameManager = gameManager;
+            YokaiList = GameManager.GetAllPawn();
+            BoardCases = GameManager.GetAllBoardCase();
+        }
+        public AICore(int playerIndex, IGameManager gameManager)
+        {
+            FirstPlayer = playerIndex == 1;
+            Camp = FirstPlayer ? ECampType.PLAYER_ONE : ECampType.PLAYER_TWO;
+            Level = AILevel.INVINCIBLE;
+            GameManager = gameManager;
+            YokaiList = GameManager.GetAllPawn();
+            BoardCases = GameManager.GetAllBoardCase();
         }
         #endregion
 
@@ -29,24 +70,27 @@ namespace Group15
 
         private bool FirstPlayer { get; set; }
         private AILevel Level { get; set; }
+        private ECampType Camp { get; set; }
+        private IGameManager GameManager { get; set; }
 
         #endregion
 
         #region Core Behaviour
 
-        public Move ComputeMove(int[,] board, int xSize, int ySize)
+        public void ComputeMove(int[,] board, int xSize, int ySize)
         {
-            CurrentBoard = board;
             XSize = xSize;
             YSize = ySize;
 
             AnalyzeYokais();
+            GetEmptyBoardCases();
             ComputeAllPotentialMoves();
 
-            return GetMoveByLevel();
+            AIMove move = GetMoveByLevel();
+            GameManager.DoAction(move.yokai, move.newPosition, move.actionType);
         }
 
-        private Move GetMoveByLevel()
+        private AIMove GetMoveByLevel()
         {
             switch (Level)
             {
@@ -61,40 +105,48 @@ namespace Group15
 
         private int XSize { get; set; }
         private int YSize { get; set; }
-        private int[,] CurrentBoard { get; set; }
 
-        private List<Yokai> YokaiList { get; set; } = new();
-        private List<Yokai> OwnYokais { get; set; } = new();
-        private List<Yokai> EnemyYokais { get; set; } = new();
+        private List<IBoardCase> BoardCases { get; set; } = new();
+        private List<IBoardCase> EmptyBoardCases { get; set; } = new();
+
+        private List<IPawn> YokaiList { get; set; } = new();
+        private List<IPawn> OwnYokais { get; set; } = new();
+        private List<IPawn> EnemyYokais { get; set; } = new();
+
+        
+        private void GetEmptyBoardCases()
+        {
+            EmptyBoardCases = new();
+
+            foreach (var bCase in BoardCases)
+            {
+                if (bCase.GetPawnOnIt() == null)
+                {
+                    EmptyBoardCases.Add(bCase);
+                }
+            }
+        }
 
         #endregion
 
         #region Potential Moves
 
-        private List<Move> PotentialMoves { get; set; } = new();
+        private List<AIMove> PotentialMoves { get; set; } = new();
 
         private void AnalyzeYokais()
         {
             OwnYokais.Clear();
             EnemyYokais.Clear();
 
-            int yokaiIndex;
-            for (int column = 0; column < XSize; column++)
+            foreach (var yokai in YokaiList)
             {
-                for (int line = 0; line < YSize; line++)
+                if (yokai.GetCurrentOwner().GetCamp() == Camp)
                 {
-                    yokaiIndex = CurrentBoard[column, line];
-                    if (yokaiIndex != 0)
-                    {
-                        if (IsYokaiMine(yokaiIndex))
-                        {
-                            OwnYokais.Add(Board.GetYokaiByIndex(yokaiIndex));
-                        }
-                        else
-                        {
-                            EnemyYokais.Add(Board.GetYokaiByIndex(yokaiIndex));
-                        }
-                    }
+                    OwnYokais.Add(yokai);
+                }
+                else
+                {
+                    EnemyYokais.Add(yokai);
                 }
             }
         }
@@ -103,14 +155,28 @@ namespace Group15
             PotentialMoves.Clear();
 
             Vector2Int newPos;
+            IBoardCase boardCase;
             foreach (var yokai in OwnYokais)
             {
-                foreach (var delta in yokai.ValidDeltas.ConvertAll(d => GetCorrectDelta(d)))
+                boardCase = yokai.GetCurrentBoardCase();
+
+                if (boardCase != null)
                 {
-                    newPos = yokai.CurrentPosition + delta;
-                    if (CanMakeMove(newPos))
+                    foreach (var delta in yokai.GetDirections().ConvertAll(d => GetCorrectDelta(d)))
                     {
-                        PotentialMoves.Add(new Move(yokai, newPos));
+                        newPos = boardCase.GetPosition() + delta;
+
+                        if (CanMakeMove(newPos))
+                        {
+                            PotentialMoves.Add(new AIMove(yokai, newPos));
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var pos in EmptyBoardCases.ConvertAll(c => c.GetPosition()))
+                    {
+                        PotentialMoves.Add(new AIMove(yokai, pos));
                     }
                 }
             }
@@ -120,7 +186,7 @@ namespace Group15
 
         #region Random Level
 
-        private Move GetRandomMove()
+        private AIMove GetRandomMove()
         {
             return PotentialMoves[UnityEngine.Random.Range(0, PotentialMoves.Count)];
         }
@@ -146,9 +212,11 @@ namespace Group15
 
         private bool IsOwnYokaiAtThisPosition(Vector2Int pos)
         {
+            IBoardCase boardCase;
             foreach (var yokai in OwnYokais)
             {
-                if (yokai.CurrentPosition == pos) return true;
+                boardCase = yokai.GetCurrentBoardCase();
+                if (boardCase != null && boardCase.GetPosition() == pos) return true;
             }
             return false;
         }

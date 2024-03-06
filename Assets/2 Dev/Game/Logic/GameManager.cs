@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour, IGameManager
 {
     #region Singleton
 
-    private static GameManager Instance { get; set; }
+    public static GameManager Instance { get; private set; }
 
     private void Awake()
     {
@@ -345,7 +345,7 @@ public class GameManager : MonoBehaviour, IGameManager
     /// <param name="actionType">Type of action performed</param>
     public void DoAction(IPawn pawnTarget, Vector2Int position, EActionType actionType)
     {
-
+        OnPlayerInput(new Move(pawnTarget as Yokai, position));
     }
 
     #endregion
