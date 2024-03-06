@@ -19,12 +19,10 @@ public class ControllerManager : MonoBehaviour
     {
         if (Instance != null)
         {
-            Instance.isInGameScene = isInGameScene;
             Destroy(gameObject);
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     #endregion
@@ -32,7 +30,6 @@ public class ControllerManager : MonoBehaviour
     #region Global Members
 
     [Header("Controller Manager")]
-    [SerializeField] private bool isInGameScene;
     [SerializeField] private Mode mode;
 
     [Header("References")]
@@ -42,7 +39,8 @@ public class ControllerManager : MonoBehaviour
     [SerializeField] private GameObject humanControllerPrefab;
     [SerializeField] private GameObject aiControllerPrefab;
 
-    public static Mode CurrentMode => Instance.mode;
+    public static bool ModeSetInMenu { get; set; }
+    public static Mode CurrentMode { get; set; }
 
     #endregion
 
@@ -61,7 +59,8 @@ public class ControllerManager : MonoBehaviour
 
     private void OnGameStart()
     {
-        if (isInGameScene) Instance.CreateControllers();
+        if (!ModeSetInMenu) CurrentMode = mode;
+        CreateControllers();
     }
 
     #endregion
@@ -70,7 +69,7 @@ public class ControllerManager : MonoBehaviour
 
     private void CreateControllers()
     {
-        switch (mode)
+        switch (CurrentMode)
         {
             case Mode.HUMAN_v_HUMAN:
                 CreateHumanControllers();
@@ -153,25 +152,6 @@ public class ControllerManager : MonoBehaviour
             }
             return currentPlayer == 1 ? Controller1 : Controller2;
         }
-    }
-
-    #endregion
-
-    #region Mode
-
-    public void SetHvH(bool isHvH)
-    {
-        if (isHvH) mode = Mode.HUMAN_v_HUMAN;
-    }
-    
-    public void SetHvAI(bool isHvAI)
-    {
-        if (isHvAI) mode = Mode.HUMAN_v_AI;
-    }
-    
-    public void SetAIvAI(bool isAIvAI)
-    {
-        if (isAIvAI) mode = Mode.AI_v_AI;
     }
 
     #endregion
