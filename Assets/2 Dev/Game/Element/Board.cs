@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UIElements;
+using YokaiNoMori.Interface;
 
 public class Board : MonoBehaviour
 {
@@ -36,6 +37,7 @@ public class Board : MonoBehaviour
     public interface IBoardLine
     {
         public BoardPiece Get(int index);
+        public List<IBoardCase> GetAllBoardCase();
     }
     public interface IBoardStructure
     {
@@ -61,6 +63,8 @@ public class Board : MonoBehaviour
 
             return new Vector2Int(Format.x - 1 - position.x, Format.y - 1 - position.y);
         }
+
+        public List<IBoardCase> GetAllBoardCase();
     }
 
     #endregion
@@ -84,6 +88,11 @@ public class Board : MonoBehaviour
             }
             Debug.LogError("Invalid index");
             return null;
+        }
+
+        public List<IBoardCase> GetAllBoardCase()
+        {
+            return new List<IBoardCase> { leftPiece, centerPiece, rightPiece };
         }
     }
     
@@ -116,6 +125,18 @@ public class Board : MonoBehaviour
             return (position.y == 3 && playerIndex == 1)
                 || (position.y == 0 && playerIndex == 2);
         }
+
+        public List<IBoardCase> GetAllBoardCase()
+        {
+            List<IBoardCase> boardCases = new List<IBoardCase>();
+
+            boardCases.AddRange(line1.GetAllBoardCase());
+            boardCases.AddRange(line2.GetAllBoardCase());
+            boardCases.AddRange(line3.GetAllBoardCase());
+            boardCases.AddRange(line4.GetAllBoardCase());
+
+            return boardCases;
+        }
     }
 
     #endregion
@@ -143,6 +164,11 @@ public class Board : MonoBehaviour
             }
             Debug.LogError("Invalid index");
             return null;
+        }
+
+        public List<IBoardCase> GetAllBoardCase()
+        {
+            return new List<IBoardCase> { leftPiece, leftCenterPiece, centerPiece, rightCenterPiece, rightPiece };
         }
     }
 
@@ -179,6 +205,20 @@ public class Board : MonoBehaviour
             return ((position.y == 4 || position.y == 5) && playerIndex == 1)
                 || ((position.y == 0 || position.y == 1) && playerIndex == 2);
         }
+
+        public List<IBoardCase> GetAllBoardCase()
+        {
+            List<IBoardCase> boardCases = new List<IBoardCase>();
+
+            boardCases.AddRange(line1.GetAllBoardCase());
+            boardCases.AddRange(line2.GetAllBoardCase());
+            boardCases.AddRange(line3.GetAllBoardCase());
+            boardCases.AddRange(line4.GetAllBoardCase());
+            boardCases.AddRange(line5.GetAllBoardCase());
+            boardCases.AddRange(line6.GetAllBoardCase());
+
+            return boardCases;
+        }
     }
 
     #endregion
@@ -205,6 +245,8 @@ public class Board : MonoBehaviour
 
 
     private IBoardStructure Structure => mode == Mode.F3x4 ? structure4x3 : structure6x5;
+
+    public static List<Yokai> YokaiList => new(Instance.yokaiList);
 
     #endregion
 
@@ -245,6 +287,8 @@ public class Board : MonoBehaviour
     }
 
     public static Vector2Int Format => Instance.Structure.Format;
+
+    public static List<IBoardCase> BoardCases => Instance.Structure.GetAllBoardCase();
 
     #endregion
 

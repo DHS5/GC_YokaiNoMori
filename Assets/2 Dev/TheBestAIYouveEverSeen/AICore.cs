@@ -63,6 +63,7 @@ namespace Group15
         private int YSize { get; set; }
         private int[,] CurrentBoard { get; set; }
 
+        private List<Yokai> YokaiList { get; set; } = new();
         private List<Yokai> OwnYokais { get; set; } = new();
         private List<Yokai> EnemyYokais { get; set; } = new();
 

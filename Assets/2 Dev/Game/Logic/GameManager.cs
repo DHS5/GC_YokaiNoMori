@@ -2,11 +2,14 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using YokaiNoMori.Enumeration;
+using YokaiNoMori.Interface;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IGameManager
 {
     #region Singleton
 
@@ -314,6 +317,35 @@ public class GameManager : MonoBehaviour
 
         Debug.LogError("No GameManager found in the scene");
         return false;
+    }
+
+    #endregion
+
+
+    #region IGameManager
+
+    /// <summary>
+    /// Collect all pawns on the board, including the graveyard
+    /// </summary>
+    /// <returns></returns>
+    public List<IPawn> GetAllPawn() => Board.YokaiList.Cast<IPawn>().ToList();
+
+    /// <summary>
+    /// Recover all the squares on the board
+    /// </summary>
+    /// <returns></returns>
+    public List<IBoardCase> GetAllBoardCase() => Board.BoardCases;
+
+
+    /// <summary>
+    /// Enable a specific type of action on a pawn
+    /// </summary>
+    /// <param name="pawnTarget">The pawn who must perform the action</param>
+    /// <param name="position">The position, in Vector2Int, targeted</param>
+    /// <param name="actionType">Type of action performed</param>
+    public void DoAction(IPawn pawnTarget, Vector2Int position, EActionType actionType)
+    {
+
     }
 
     #endregion
