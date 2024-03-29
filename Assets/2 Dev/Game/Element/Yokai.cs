@@ -229,7 +229,12 @@ public class Yokai : MonoBehaviour, IPawn,
     /// Retrieve pawn type
     /// </summary>
     /// <returns></returns>
-    public EPawnType GetPawnType() => data.PawnType;
+    public EPawnType GetPawnType() => data.GetPawnType(_isOnSecondFace);
+
+    public Vector2Int GetCurrentPosition()
+    {
+        return CurrentPosition;
+    }
 
     #endregion
 

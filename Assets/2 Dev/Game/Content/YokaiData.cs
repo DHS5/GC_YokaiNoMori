@@ -21,11 +21,11 @@ public class YokaiData : ScriptableObject
 
     [SerializeField] private bool hasSecondFace;
     [SerializeField] private Sprite secondSprite;
+    [SerializeField] private EPawnType secondPawnType;
     [Space(5f)]
     [SerializeField] private YokaiMovementGrid secondMovementGrid;
 
 
-    public EPawnType PawnType => pawnType;
     public bool IsKing => isKing;
     public int Index => index;
     public string DisplayName => displayName;
@@ -42,6 +42,11 @@ public class YokaiData : ScriptableObject
     {
         if (HasSecondFace && secondFace) return secondMovementGrid.ValidDeltas;
         return baseMovementGrid.ValidDeltas;
+    }
+    public EPawnType GetPawnType(bool secondFace)
+    {
+        if (HasSecondFace && secondFace) return secondPawnType;
+        return pawnType;
     }
 
 

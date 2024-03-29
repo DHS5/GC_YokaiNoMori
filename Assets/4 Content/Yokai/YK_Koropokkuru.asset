@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e635e5eb64fcae546a8b05b057219503, type: 3}
   m_Name: YK_Koropokkuru
   m_EditorClassIdentifier: 
+  pawnType: 4
   isKing: 1
   index: 7
   displayName: 
   sprite: {fileID: 21300000, guid: e45182e3bbb731f4a81039ab0d241ab2, type: 3}
-  startPosition: {x: 1, y: 0}
   baseMovementGrid:
     north: 1
     northEast: 1

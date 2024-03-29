@@ -37,6 +37,19 @@ public class Player : MonoBehaviour, ICompetitor
 
     #region ICompetitor
 
+    public void Init(IGameManager igameManager, float timerForAI, ECampType currentCamp)
+    {
+
+    }
+
+    /// <summary>
+    /// Used before StartTurn() for getting data from the board
+    /// </summary>
+    public void GetDatas()
+    {
+
+    }
+
     /// <summary>
     /// Used by my UI
     /// </summary>

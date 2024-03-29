@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using YokaiNoMori.Enumeration;
 using YokaiNoMori.Interface;
+using YokaiNoMori.Struct;
 
 public class GameManager : MonoBehaviour, IGameManager
 {
@@ -329,6 +330,21 @@ public class GameManager : MonoBehaviour, IGameManager
     public void DoAction(IPawn pawnTarget, Vector2Int position, EActionType actionType)
     {
         OnPlayerInput(new Move(pawnTarget as Yokai, position));
+    }
+
+    public List<IPawn> GetReservePawnsByPlayer(ECampType campType)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<IPawn> GetPawnsOnBoard(ECampType campType)
+    {
+        throw new NotImplementedException();
+    }
+
+    public SAction GetLastAction()
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

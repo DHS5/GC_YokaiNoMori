@@ -8,7 +8,7 @@ public class AIController : Controller
     public override void PrepareInput()
     {
         Vector2Int format = Board.Format;
-        AI.ComputeMove(Board.GetCurrentBoard(), format.x, format.y);
+        AI.ComputeMove();
     }
 
     #region Player

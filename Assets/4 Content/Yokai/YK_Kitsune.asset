@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e635e5eb64fcae546a8b05b057219503, type: 3}
   m_Name: YK_Kitsune
   m_EditorClassIdentifier: 
+  pawnType: 2
+  isKing: 0
   index: 5
   displayName: 
   sprite: {fileID: 21300000, guid: a4b85dd7648198248a67c6c6c60f76cb, type: 3}
-  startPosition: {x: 0, y: 0}
   baseMovementGrid:
     north: 0
     northEast: 1
@@ -31,6 +32,7 @@ MonoBehaviour:
     - {x: 1, y: -1}
     - {x: -1, y: -1}
   hasSecondFace: 0
+  secondSprite: {fileID: 0}
   secondMovementGrid:
     north: 0
     northEast: 0

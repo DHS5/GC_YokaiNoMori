@@ -75,13 +75,10 @@ namespace Group15
 
         #endregion
 
-        #region Core Behaviour
+        #region Behaviour
 
-        public void ComputeMove(int[,] board, int xSize, int ySize)
+        public void ComputeMove()
         {
-            XSize = xSize;
-            YSize = ySize;
-
             AnalyzeYokais();
             GetEmptyBoardCases();
             ComputeAllPotentialMoves();
@@ -101,19 +98,31 @@ namespace Group15
 
         #endregion
 
+
+
         #region Board Infos
 
-        private int XSize { get; set; }
-        private int YSize { get; set; }
+        private int XSize => 3;
+        private int YSize => 4;
 
         private List<IBoardCase> BoardCases { get; set; } = new();
         private List<IBoardCase> EmptyBoardCases { get; set; } = new();
+        private Dictionary<Position, IBoardCase> OrderedBoardCases { get; set; } = new();
 
         private List<IPawn> YokaiList { get; set; } = new();
         private List<IPawn> OwnYokais { get; set; } = new();
         private List<IPawn> EnemyYokais { get; set; } = new();
 
-        
+        private void LoadBoardCases(List<IBoardCase> boardCases)
+        {
+            BoardCases = boardCases;
+
+            for (int i = 0; i < 12; i++)
+            {
+                OrderedBoardCases[(Position)i] = boardCases[i];
+            }
+        }
+
         private void GetEmptyBoardCases()
         {
             EmptyBoardCases = new();
@@ -184,6 +193,7 @@ namespace Group15
 
         #endregion
 
+
         #region Random Level
 
         private AIMove GetRandomMove()
@@ -193,8 +203,47 @@ namespace Group15
 
         #endregion
 
+        #region Invincible Level
+
+        private AIMove GetInvincibleMove()
+        {
+            if (perfectMovesDico.TryGetValue(new BoardState(YokaiList), out ushort nextMove))
+            {
+                return GetAIMoveFromNextMove(nextMove);
+            }
+            return null;
+        }
+
+
+        // ----- File -----
+
+        private Dictionary<ulong, ushort> perfectMovesDico = new();
+
+        private void LoadPerfectMovesDico()
+        {
+            // TODO
+        }
+
+        private AIMove GetAIMoveFromNextMove(NextMove nextMove)
+        {
+            (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
+            EPawnType pawnType = BoardState.GetPawnTypeFromPiece(nextMoveInfo.piece);
+            Vector2Int oldPosition = BoardState.GetVectorFromPosition(nextMoveInfo.oldPos);
+            
+
+            return new(OwnYokais.Find(y => y.GetPawnType() == pawnType && y.GetCurrentPosition() == oldPosition),
+                BoardState.GetVectorFromPosition(nextMoveInfo.nextPos));
+        }
+
+        #endregion
+
 
         #region Utility
+
+        private IBoardCase GetBoardCaseAtPosition(Position position)
+        {
+            return OrderedBoardCases[position];
+        }
 
         private bool IsYokaiMine(int yokaiIndex)
         {

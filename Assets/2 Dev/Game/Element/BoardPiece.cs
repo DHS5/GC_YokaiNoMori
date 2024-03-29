@@ -113,6 +113,11 @@ public class BoardPiece : MonoBehaviour, IBoardCase,
     /// <returns></returns>
     public IPawn GetPawnOnIt() => Board.GetYokaiAtPosition(Position);
 
+    public bool IsBusy()
+    {
+        return Board.GetYokaiAtPosition(Position) != null;
+    }
+
     #endregion
 
 

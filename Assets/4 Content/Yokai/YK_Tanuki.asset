@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e635e5eb64fcae546a8b05b057219503, type: 3}
   m_Name: YK_Tanuki
   m_EditorClassIdentifier: 
+  pawnType: 3
+  isKing: 0
   index: 3
   displayName: 
   sprite: {fileID: 21300000, guid: 7539e39f2db1ae44ab265ccecb9d6c61, type: 3}
-  startPosition: {x: 2, y: 0}
   baseMovementGrid:
     north: 1
     northEast: 0
@@ -31,6 +32,7 @@ MonoBehaviour:
     - {x: -1, y: 0}
     - {x: 0, y: -1}
   hasSecondFace: 0
+  secondSprite: {fileID: 0}
   secondMovementGrid:
     north: 0
     northEast: 0
