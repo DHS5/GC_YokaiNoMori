@@ -9,9 +9,9 @@ namespace Group15
     {
         #region Constructor
 
-        public NextMove(string intStr)
+        public NextMove(string hexaStr)
         {
-            move = Convert.ToByte(intStr);
+            move = Convert.ToUInt16(hexaStr, 16);
         }
 
         #endregion

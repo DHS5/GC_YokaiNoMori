@@ -205,9 +205,11 @@ namespace Group15
 
         #region Invincible Level
 
+        private AIMovesImporter movesImporter;
+
         private AIMove GetInvincibleMove()
         {
-            if (perfectMovesDico.TryGetValue(new BoardState(YokaiList), out ushort nextMove))
+            if (movesImporter.TryGetNextMove(new BoardState(YokaiList), out NextMove nextMove))
             {
                 return GetAIMoveFromNextMove(nextMove);
             }
@@ -215,14 +217,7 @@ namespace Group15
         }
 
 
-        // ----- File -----
-
-        private Dictionary<ulong, ushort> perfectMovesDico = new();
-
-        private void LoadPerfectMovesDico()
-        {
-            // TODO
-        }
+        // ----- Utility -----
 
         private AIMove GetAIMoveFromNextMove(NextMove nextMove)
         {
