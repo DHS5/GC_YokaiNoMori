@@ -8,6 +8,8 @@ using YokaiNoMori.Interface;
 
 public class Board : MonoBehaviour
 {
+    public static Vector2Int CemeteryPosition = new Vector2Int(-1, -1);
+
     #region Singleton
 
     private static Board Instance { get; set; }
@@ -391,7 +393,7 @@ public class Board : MonoBehaviour
     private void ComputeNextPositions(Yokai yokai)
     {
         Vector2Int pos = yokai.CurrentPosition;
-        if (pos == Vector2Int.down)
+        if (pos == CemeteryPosition)
         {
             yokai.SetValidNextPositions(GetAllEmpty());
             return;
@@ -518,7 +520,7 @@ public class Board : MonoBehaviour
         yokai.PlayerIndex = yokai.PlayerIndex == 1 ? 2 : 1;
 
         yokai.OnSentToCemetery();
-        yokai.CurrentPosition = Vector2Int.down;
+        yokai.CurrentPosition = CemeteryPosition;
 
         MoveYokaiToCemetery(yokai);
         AddToCemetery(yokai);

@@ -92,9 +92,9 @@ namespace Group15
             }
         }
 
-        public BoardState ComputeChildFromNextMove(NextMove nextMove)
+        public BoardState ComputeChildFromNextMove(NextMove nextMove, ECampType camp)
         {
-            (byte current, byte next) = nextMove.GetCurrentAndNext();
+            (byte current, byte next) = nextMove.GetCurrentAndNext(camp);
             var newPos = next & 0x0f;
 
             byte[] currentBytes = BitConverter.GetBytes(board);
@@ -111,7 +111,7 @@ namespace Group15
                 }
                 else if ((currentBytes[i] & 0x0f) == newPos)
                 {
-                    byte piece = (byte)((Piece)((currentBytes[i] & 0xf0) >> 4)).GetOpposite();
+                    byte piece = (byte)((Piece)((currentBytes[i] & 0xf0) >> 4)).GetOppositeExceptKing();
                     newBytes[i] = (byte)((piece << 4) + ((byte)Position.Dead));
                 }
                 else
@@ -130,9 +130,9 @@ namespace Group15
 
             return new(BitConverter.ToUInt64(result.ToArray()));
         }
-        public BoardState ComputeChildFromNextMoveOnEmptySpace(NextMove nextMove)
+        public BoardState ComputeChildFromNextMoveOnEmptySpace(NextMove nextMove, ECampType camp)
         {
-            (byte current, byte next) = nextMove.GetCurrentAndNext();
+            (byte current, byte next) = nextMove.GetCurrentAndNext(camp);
 
             byte[] currentBytes = BitConverter.GetBytes(board);
             byte[] newBytes = new byte[8];

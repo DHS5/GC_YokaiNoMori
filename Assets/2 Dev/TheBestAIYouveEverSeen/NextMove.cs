@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YokaiNoMori.Enumeration;
 
 namespace Group15
 {
@@ -37,13 +38,15 @@ namespace Group15
             return nextMove.move;
         }
 
-        public (byte, byte) GetCurrentAndNext()
+        public (byte, byte) GetCurrentAndNext(ECampType camp)
         {
-            byte newPosition = (byte)(move & 0x00f);
-            byte oldPosition = (byte)((move & 0x0f0) >> 4);
-            byte piece = (byte)((move & 0xf00) >> 4);
+            Position newPosition = (Position)(move & 0x00f);
+            Position oldPosition = (Position)((move & 0x0f0) >> 4);
+            Piece piece = (Piece)((move & 0xf00) >> 4);
 
-            return ((byte)(piece + oldPosition), (byte)(piece + newPosition));
+            byte b_piece = (byte)piece.TransformFromMovement(camp, oldPosition, newPosition);
+
+            return ((byte)(b_piece + (byte)oldPosition), (byte)(b_piece + (byte)newPosition));
         }
 
         #region Computation

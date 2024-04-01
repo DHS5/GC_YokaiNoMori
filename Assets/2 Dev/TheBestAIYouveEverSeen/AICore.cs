@@ -98,6 +98,10 @@ namespace Group15
             switch (Level)
             {
                 case AILevel.RANDOM: return GetRandomMove();
+                case AILevel.DEBUTANT: return GetDebutantMove();
+                case AILevel.INTERMEDIATE: return GetIntermediateMove();
+                case AILevel.MASTER: return GetMasterMove();
+                case AILevel.INVINCIBLE: return GetInvincibleMove();
                 default: return null;
             }
         }
@@ -113,21 +117,10 @@ namespace Group15
 
         private List<IBoardCase> BoardCases { get; set; } = new();
         private List<IBoardCase> EmptyBoardCases { get; set; } = new();
-        private Dictionary<Position, IBoardCase> OrderedBoardCases { get; set; } = new();
 
         private List<IPawn> YokaiList { get; set; } = new();
         private List<IPawn> OwnYokais { get; set; } = new();
         private List<IPawn> EnemyYokais { get; set; } = new();
-
-        private void LoadBoardCases(List<IBoardCase> boardCases)
-        {
-            BoardCases = boardCases;
-
-            for (int i = 0; i < 12; i++)
-            {
-                OrderedBoardCases[(Position)i] = boardCases[i];
-            }
-        }
 
         private void GetEmptyBoardCases()
         {
@@ -209,42 +202,91 @@ namespace Group15
 
         #endregion
 
+        #region Debutant Level
+
+        private AIMove GetDebutantMove()
+        {
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 3));
+            if (move != null) return move;
+
+            Debug.LogError("Move is null --> Random");
+            return GetRandomMove();
+        }
+
+        #endregion
+        
+        #region Intermediate Level
+
+        private AIMove GetIntermediateMove()
+        {
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 5));
+            if (move != null) return move;
+
+            Debug.LogError("Move is null --> Random");
+            return GetRandomMove();
+        }
+
+        #endregion
+
+        #region Master Level
+
+        private AIMove GetMasterMove()
+        {
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 7));
+            if (move != null) return move;
+
+            Debug.LogError("Move is null --> Random");
+            return GetRandomMove();
+        }
+
+        #endregion
+
         #region Invincible Level
 
         private AIMovesImporter movesImporter;
 
         private AIMove GetInvincibleMove()
         {
+            AIMove move;
             if (movesImporter.TryGetNextMove(new BoardState(YokaiList), out NextMove nextMove))
             {
-                return GetAIMoveFromNextMove(nextMove);
+                move = GetAIMoveFromNextMove(nextMove);
+                if (move != null) return move;
+            }
+            return null;
+        }
+
+        #endregion
+
+        private AIMove GetAIMoveFromNextMove(NextMove nextMove)
+        {
+            if (nextMove == 0) return null;
+
+            (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
+            EPawnType pawnType = BoardState.GetPawnTypeFromPiece(nextMoveInfo.piece);
+            Vector2Int oldPosition = nextMoveInfo.oldPos.ToVector();
+
+            IPawn yokai = OwnYokais.Find(y => y.GetPawnType() == pawnType && y.GetCurrentPosition() == oldPosition);
+            if (yokai != null)
+                return new(yokai, nextMoveInfo.nextPos.ToVector());
+
+            yokai = OwnYokais.Find(y => y.GetCurrentPosition() == oldPosition);
+            if (yokai != null)
+            {
+                AIMove move = new(yokai, nextMoveInfo.nextPos.ToVector());
+                if (PotentialMoves.Contains(move)) return move;
+            }
+
+            Debug.LogError("Couldn't find own yokai of type " + pawnType + " at position " + oldPosition);
+            foreach (var yk in OwnYokais)
+            {
+                Debug.Log(yk.GetPawnType() + " " + yk.GetCurrentPosition());
             }
             return null;
         }
 
 
-        // ----- Utility -----
-
-        private AIMove GetAIMoveFromNextMove(NextMove nextMove)
-        {
-            (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
-            EPawnType pawnType = BoardState.GetPawnTypeFromPiece(nextMoveInfo.piece);
-            Vector2Int oldPosition = nextMoveInfo.oldPos.ToVector();
-            
-
-            return new(OwnYokais.Find(y => y.GetPawnType() == pawnType && y.GetCurrentPosition() == oldPosition),
-                nextMoveInfo.nextPos.ToVector());
-        }
-
-        #endregion
-
-
         #region Utility
-
-        private IBoardCase GetBoardCaseAtPosition(Position position)
-        {
-            return OrderedBoardCases[position];
-        }
 
         private bool IsYokaiMine(int yokaiIndex)
         {

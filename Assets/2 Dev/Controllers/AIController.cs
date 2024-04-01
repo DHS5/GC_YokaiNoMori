@@ -15,9 +15,11 @@ public class AIController : Controller
 
     private AICore AI { get; set; }
 
+    [SerializeField] private AILevel level;
+
     protected override void OnAssignPlayer()
     {
-        AI = new(player.Index, AILevel.RANDOM, GameManager.Instance);
+        AI = new(player.Index, level, GameManager.Instance);
     }
 
     #endregion

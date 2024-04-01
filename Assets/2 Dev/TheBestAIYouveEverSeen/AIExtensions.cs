@@ -26,11 +26,13 @@ namespace Group15
                 case Piece.ELEPHANT2:
                     return new List<Vector2Int>() { Vector2Int.one, new Vector2Int(-1,1), new Vector2Int(-1,-1), new Vector2Int(1,-1) };
                 case Piece.CHICK1:
-                case Piece.CHICK2:
                     return new List<Vector2Int>() { Vector2Int.up };
+                case Piece.CHICK2:
+                    return new List<Vector2Int>() { Vector2Int.down };
                 case Piece.HEN1:
+                    return new List<Vector2Int>() { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right, Vector2Int.one, new Vector2Int(-1, 1) };
                 case Piece.HEN2:
-                    return new List<Vector2Int>() { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right, Vector2Int.one, new Vector2Int(-1,1) };
+                    return new List<Vector2Int>() { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right, new Vector2Int(1, -1), new Vector2Int(-1, -1) };
             }
         }
 
@@ -55,12 +57,12 @@ namespace Group15
             }
         }
 
-        public static Piece GetOpposite(this Piece piece)
+        public static Piece GetOppositeExceptKing(this Piece piece)
         {
             switch (piece)
             {
                 case Piece.LION1:
-                    return Piece.LION2;
+                    return Piece.LION1;
                 case Piece.GIRAFFE1:
                     return Piece.GIRAFFE2;
                 case Piece.ELEPHANT1:
@@ -69,7 +71,7 @@ namespace Group15
                 case Piece.HEN1:
                     return Piece.CHICK2;
                 case Piece.LION2:
-                    return Piece.LION1;
+                    return Piece.LION2;
                 case Piece.GIRAFFE2:
                     return Piece.GIRAFFE1;
                 case Piece.ELEPHANT2:
@@ -85,6 +87,23 @@ namespace Group15
         public static bool IsKingOfCamp(this Piece piece, ECampType camp)
         {
             return (camp == ECampType.PLAYER_ONE && piece == Piece.LION1) || (camp == ECampType.PLAYER_TWO && piece == Piece.LION2);
+        }
+
+        public static Piece TransformFromMovement(this Piece piece, ECampType camp, Position oldPosition, Position newPosition)
+        {
+            if (oldPosition == Position.Dead) return piece;
+
+            switch (camp)
+            {
+                case ECampType.PLAYER_ONE:
+                    if (piece != Piece.CHICK1) return piece;
+                    return newPosition.IsWinningRowForCamp(camp) ? Piece.HEN1 : Piece.CHICK1;
+                case ECampType.PLAYER_TWO:
+                    if (piece != Piece.CHICK2) return piece;
+                    return newPosition.IsWinningRowForCamp(camp) ? Piece.HEN2 : Piece.CHICK2;
+                default:
+                    return piece;
+            }
         }
 
         #endregion
