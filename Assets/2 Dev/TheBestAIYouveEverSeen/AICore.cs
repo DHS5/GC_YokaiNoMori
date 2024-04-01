@@ -31,6 +31,12 @@ namespace Group15
                 newPosition = _newPosition;
                 actionType = yokai.GetCurrentBoardCase() != null ? EActionType.MOVE : EActionType.PARACHUTE;
             }
+            public AIMove(IPawn _yokai, Vector2Int _newPosition, EActionType _actionType)
+            {
+                yokai = _yokai;
+                newPosition = _newPosition;
+                actionType = _actionType;
+            }
 
             #endregion
 
@@ -223,11 +229,11 @@ namespace Group15
         {
             (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
             EPawnType pawnType = BoardState.GetPawnTypeFromPiece(nextMoveInfo.piece);
-            Vector2Int oldPosition = BoardState.GetVectorFromPosition(nextMoveInfo.oldPos);
+            Vector2Int oldPosition = nextMoveInfo.oldPos.ToVector();
             
 
             return new(OwnYokais.Find(y => y.GetPawnType() == pawnType && y.GetCurrentPosition() == oldPosition),
-                BoardState.GetVectorFromPosition(nextMoveInfo.nextPos));
+                nextMoveInfo.nextPos.ToVector());
         }
 
         #endregion

@@ -13,6 +13,11 @@ namespace Group15
         {
             move = Convert.ToUInt16(hexaStr, 16);
         }
+        public NextMove(Piece piece, Position oldPos, Position newPos)
+        {
+            move = 0;
+            SaveMove(piece, oldPos, newPos);
+        }
 
         #endregion
 
@@ -32,6 +37,15 @@ namespace Group15
             return nextMove.move;
         }
 
+        public (byte, byte) GetCurrentAndNext()
+        {
+            byte newPosition = (byte)(move & 0x00f);
+            byte oldPosition = (byte)((move & 0x0f0) >> 4);
+            byte piece = (byte)((move & 0xf00) >> 4);
+
+            return ((byte)(piece + oldPosition), (byte)(piece + newPosition));
+        }
+
         #region Computation
 
         private (Piece, Position, Position) ComputeMove()
@@ -43,6 +57,19 @@ namespace Group15
             return (piece, oldPosition, newPosition);
         }
 
+        private void SaveMove(Piece piece, Position oldPos, Position newPos)
+        {
+            int i_piece = (byte)piece << 8;
+            int i_oldPos = (byte)oldPos << 4;
+            int i_newPos = (ushort)newPos;
+            move = (ushort)(i_piece + i_oldPos + i_newPos);
+        }
+
         #endregion
+
+        public override string ToString()
+        {
+            return string.Format("0x{0:X}", move) + " (" + move.ToString() + ")";
+        }
     }
 }
