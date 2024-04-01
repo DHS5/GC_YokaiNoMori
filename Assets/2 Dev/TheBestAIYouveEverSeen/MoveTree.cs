@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Drawing;
 using UnityEngine;
 using YokaiNoMori.Enumeration;
 using YokaiNoMori.Interface;
@@ -17,7 +18,6 @@ namespace Group15
                 hasBestMove = true;
                 moves = null;
                 wins = Vector2Int.zero;
-                hasComputedWins = false;
             }
             public Result(bool _hasBestMove)
             {
@@ -26,7 +26,6 @@ namespace Group15
                 bestMove = default;
                 moves = new();
                 wins = Vector2Int.zero;
-                hasComputedWins = false;
             }
 
             public ECampType winnerCamp;
@@ -35,15 +34,10 @@ namespace Group15
 
             public Dictionary<NextMove, MoveTree> moves;
 
-            private Vector2Int wins;
-            private bool hasComputedWins;
+            public Vector2Int wins;
 
             public Vector2Int GetWins(ECampType playerCamp)
             {
-                if (hasComputedWins) return wins;
-
-                hasComputedWins = true;
-
                 if (hasBestMove || moves == null)
                 {
                     wins = winnerCamp == ECampType.NONE ? Vector2Int.zero : (winnerCamp == playerCamp ? Vector2Int.right : Vector2Int.up);
@@ -52,31 +46,30 @@ namespace Group15
 
                 foreach (var move in moves)
                 {
-                    wins += move.Value.result.ComputeBestMove(playerCamp);
+                    wins += move.Value.ComputeBestMove();
                 }
 
                 return wins;
             }
             public Vector2Int ComputeBestMove(ECampType playerCamp)
             {
-                if (hasComputedWins) return wins;
-
-                hasComputedWins = true;
-
                 if (hasBestMove || moves == null)
                 {
                     wins = winnerCamp == ECampType.NONE ? Vector2Int.zero : (winnerCamp == playerCamp ? Vector2Int.right : Vector2Int.up);
                     return wins;
                 }
 
-                List<(Vector2Int, NextMove)> choices = new();
+                wins = new Vector2Int(0, 100);
+                Vector2Int result;
                 foreach (var move in moves)
                 {
-                    choices.Add((move.Value.result.GetWins(playerCamp), move.Key));
+                    result = move.Value.ComputeBestMove();
+                    if (Comparer(result, wins) <= 0)
+                    {
+                        wins = result;
+                        bestMove = move.Key;
+                    }
                 }
-                choices.Sort((c1,c2) => Comparer(c1.Item1, c2.Item1));
-
-                (wins, bestMove) = choices[0];
                 return wins;
 
                 // Local Comparer
@@ -124,25 +117,41 @@ namespace Group15
         #region Accessors
 
         private bool hasComputedDepth = false;
-        private void ComputeDepth(Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited, int depth)
-        {
-            if (hasComputedDepth) return;
-            
-            hasComputedDepth = true;
-
-            if (Depth == depth)
+        private void ComputeDepth(int depth)
+        {            
+            if (!hasComputedDepth && Depth == depth)
             {
+                hasComputedDepth = true;
+
                 ComputeBoard();
-                ComputePotentialMoves(visited, depth);
+                ComputePotentialMoves(depth);
                 visited[Camp].TryAdd(State, this);
+                return;
             }
-            else if (result.moves != null)
+
+            if (result.moves != null)
             {
                 foreach (var move in result.moves)
                 {
-                    move.Value.ComputeDepth(visited, depth);
+                    if (move.Value.Depth < Depth)
+                        move.Value.ComputeDepth(depth);
                 }
+                return;
             }
+        }
+
+        private bool hasComputedBestMove = false;
+        public Vector2Int ComputeBestMove()
+        {
+            if (hasComputedBestMove) return Vector2Int.zero;
+
+            hasComputedBestMove = true;
+
+            if (IsPlayer)
+            {
+                return result.ComputeBestMove(Camp);
+            }
+            return result.GetWins(Camp.OppositeCamp());
         }
 
         #endregion
@@ -180,7 +189,7 @@ namespace Group15
 
         #region Computations
 
-        private void ComputePotentialMoves(Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited, int depth)
+        private void ComputePotentialMoves(int depth)
         {
             PotentialMoves = new();
             result = new Result(false);
@@ -202,7 +211,23 @@ namespace Group15
                         {
                             nextMove = new(piecePos.Item1, piecePos.Item2, emptyPos);
                             nextBoard = State.ComputeChildFromNextMoveOnEmptySpace(nextMove, Camp);
-                            PotentialMoves.Add((nextMove, nextBoard));
+
+                            if (visited[Camp.OppositeCamp()].TryGetValue(nextBoard, out MoveTree tree))
+                            {
+                                if (tree.result.hasBestMove)
+                                {
+                                    result = new Result(tree.result.winnerCamp, nextMove);
+                                    return;
+                                }
+                                else
+                                {
+                                    PotentialMoves.Add((nextMove, nextBoard));
+                                }
+                            }
+                            else
+                            {
+                                PotentialMoves.Add((nextMove, nextBoard));
+                            }
                         }
                     }
                     // Else
@@ -223,7 +248,7 @@ namespace Group15
                                     nextMove = new(piecePos.Item1, piecePos.Item2, newPos.ToPosition());
                                     nextBoard = State.ComputeChildFromNextMoveOnEmptySpace(nextMove, Camp);
 
-                                    if (visited[Camp].TryGetValue(nextBoard, out MoveTree tree))
+                                    if (visited[Camp.OppositeCamp()].TryGetValue(nextBoard, out MoveTree tree))
                                     {
                                         if (tree.result.hasBestMove)
                                         {
@@ -255,7 +280,7 @@ namespace Group15
                                     nextMove = new(piecePos.Item1, piecePos.Item2, newPos.ToPosition());
                                     nextBoard = State.ComputeChildFromNextMove(nextMove, Camp);
 
-                                    if (visited[Camp].TryGetValue(nextBoard, out MoveTree tree))
+                                    if (visited[Camp.OppositeCamp()].TryGetValue(nextBoard, out MoveTree tree))
                                     {
                                         if (tree.result.hasBestMove)
                                         {
@@ -289,13 +314,14 @@ namespace Group15
 
             if (PotentialMoves.Count == 0)
             {
+                if (Depth == 6) Debug.Log(Camp + " couldn't find moves in depth 6");
                 result = new Result(Camp.OppositeCamp(), 0);
                 return;
             }
 
             foreach (var move in PotentialMoves)
             {
-                if (visited[Camp].TryGetValue(move.Item2, out MoveTree tree))
+                if (visited[Camp.OppositeCamp()].TryGetValue(move.Item2, out MoveTree tree))
                 {
                     result.moves.TryAdd(move.Item1, tree);
                 }
@@ -308,30 +334,36 @@ namespace Group15
 
         #endregion
 
-        #region Accessors
+        #region Static Accessor
+
+        private static Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited = new()
+            {
+                { ECampType.PLAYER_ONE, new() }, { ECampType.PLAYER_TWO, new() }
+            };
 
         public static NextMove GetBestMove(List<IPawn> state, ECampType camp, int depth)
         {
             MoveTree moveTree = new MoveTree(new BoardState(state), camp, true, depth);
 
-            Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited = new()
-            {
-                { ECampType.PLAYER_ONE, new() }, { ECampType.PLAYER_TWO, new() }
-            };
+            moveTree.State.DebugBoardState();
 
-            moveTree.ComputeDepth(visited, depth);
+            visited[ECampType.PLAYER_ONE].Clear();
+            visited[ECampType.PLAYER_TWO].Clear();
+
+            moveTree.ComputeDepth(depth);
 
             if (moveTree.result.hasBestMove)
             {
+                Debug.Log("Has perfect move for winner " + moveTree.result.winnerCamp);
                 return moveTree.result.bestMove;
             }
 
             for (int i = depth - 1; i > 0; i--)
             {
-                moveTree.ComputeDepth(visited, i);
+                moveTree.ComputeDepth(i);
             }
 
-            moveTree.result.ComputeBestMove(camp);
+            moveTree.ComputeBestMove();
 
             return moveTree.result.bestMove;
         }

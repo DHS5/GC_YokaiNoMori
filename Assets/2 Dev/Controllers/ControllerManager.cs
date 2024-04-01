@@ -104,11 +104,10 @@ public class ControllerManager : MonoBehaviour
         human.name = "Human Controller";
         ai.name = "AI Controller";
 
-        bool humanFirst = Random.value > 0.5f;
-        Controller1 = humanFirst ? human : ai;
-        Controller2 = humanFirst ? ai : human;
+        Controller1 = HumanFirst ? human : ai;
+        Controller2 = HumanFirst ? ai : human;
 
-        PlayerManager.AssignPlayerControllers(human, ai);
+        PlayerManager.AssignPlayerControllers(Controller1, Controller2);
     }
     private void CreateAIControllers()
     {
@@ -137,6 +136,7 @@ public class ControllerManager : MonoBehaviour
 
     #region Controllers
 
+    public static bool HumanFirst { get; set; }
     public static Controller Controller1 { get; private set; }
     public static Controller Controller2 { get; private set; }
            

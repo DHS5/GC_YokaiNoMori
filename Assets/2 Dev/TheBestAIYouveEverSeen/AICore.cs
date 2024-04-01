@@ -10,11 +10,9 @@ namespace Group15
 {
     public enum AILevel
     {
-        RANDOM = 0,
-        DEBUTANT = 1,
-        INTERMEDIATE = 2,
-        MASTER = 3,
-        INVINCIBLE = 4
+        DEBUTANT = 0,
+        INTERMEDIATE = 1,
+        INVINCIBLE = 2
     }
 
     public class AICore
@@ -97,10 +95,8 @@ namespace Group15
         {
             switch (Level)
             {
-                case AILevel.RANDOM: return GetRandomMove();
                 case AILevel.DEBUTANT: return GetDebutantMove();
                 case AILevel.INTERMEDIATE: return GetIntermediateMove();
-                case AILevel.MASTER: return GetMasterMove();
                 case AILevel.INVINCIBLE: return GetInvincibleMove();
                 default: return null;
             }
@@ -193,7 +189,7 @@ namespace Group15
         #endregion
 
 
-        #region Random Level
+        #region Random
 
         private AIMove GetRandomMove()
         {
@@ -206,7 +202,7 @@ namespace Group15
 
         private AIMove GetDebutantMove()
         {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 3));
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 1));
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");
@@ -219,20 +215,7 @@ namespace Group15
 
         private AIMove GetIntermediateMove()
         {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 5));
-            if (move != null) return move;
-
-            Debug.LogError("Move is null --> Random");
-            return GetRandomMove();
-        }
-
-        #endregion
-
-        #region Master Level
-
-        private AIMove GetMasterMove()
-        {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 7));
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 6));
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");
@@ -253,14 +236,18 @@ namespace Group15
                 move = GetAIMoveFromNextMove(nextMove);
                 if (move != null) return move;
             }
-            return null;
+            return GetIntermediateMove();
         }
 
         #endregion
 
         private AIMove GetAIMoveFromNextMove(NextMove nextMove)
         {
-            if (nextMove == 0) return null;
+            if (nextMove == 0)
+            {
+                Debug.LogError("Next move is 0");
+                return null;
+            }
 
             (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
             EPawnType pawnType = BoardState.GetPawnTypeFromPiece(nextMoveInfo.piece);

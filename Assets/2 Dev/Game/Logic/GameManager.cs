@@ -55,7 +55,19 @@ public class GameManager : MonoBehaviour, IGameManager
     private void Start()
     {
         OnGameStart?.Invoke();
+    }
 
+    private void OnEnable()
+    {
+        Board.OnBoardReady += OnBoardReady;
+    }
+    private void OnDisable()
+    {
+        Board.OnBoardReady -= OnBoardReady;
+    }
+
+    private void OnBoardReady()
+    {
         IsPlaying = true;
         SetTurn(1);
     }

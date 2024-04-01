@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e635e5eb64fcae546a8b05b057219503, type: 3}
   m_Name: YK_Kodama
   m_EditorClassIdentifier: 
+  pawnType: 0
+  isKing: 0
   index: 1
   displayName: 
   sprite: {fileID: 21300000, guid: 688f282ab0d5e404992cccec2aeaf7aa, type: 3}
-  startPosition: {x: 1, y: 1}
   baseMovementGrid:
     north: 1
     northEast: 0
@@ -29,6 +30,7 @@ MonoBehaviour:
     - {x: 0, y: 1}
   hasSecondFace: 1
   secondSprite: {fileID: 21300000, guid: ef717569649482341b5f29fcd527dfa7, type: 3}
+  secondPawnType: 1
   secondMovementGrid:
     north: 1
     northEast: 1

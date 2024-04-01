@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using YokaiNoMori.Enumeration;
 using YokaiNoMori.Interface;
@@ -240,6 +241,15 @@ namespace Group15
         public override string ToString()
         {
             return string.Format("0x{0:X}", board) + " (" + board.ToString() + ")";
+        }
+        public void DebugBoardState()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var piecePos in GetPiecesAndPosition())
+            {
+                sb.AppendLine(piecePos.Item1 + " at " + piecePos.Item2);
+            }
+            Debug.Log(sb.ToString());
         }
 
         public List<(Piece, Position)> GetPiecesAndPosition()

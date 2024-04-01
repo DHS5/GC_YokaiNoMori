@@ -243,6 +243,7 @@ public class Board : MonoBehaviour
     [SerializeField] private float boardRotationDuration = 1f;
     [SerializeField] private float yokaiMoveDuration = 1f;
 
+    public static event Action OnBoardReady;
 
     private IBoardStructure Structure => mode == Mode.F3x4 ? structure4x3 : structure6x5;
 
@@ -330,6 +331,17 @@ public class Board : MonoBehaviour
         }
 
         BoardRegister.Init();
+
+        if (ControllerManager.CurrentMode == ControllerManager.Mode.HUMAN_v_AI && !ControllerManager.HumanFirst)
+        {
+            DOVirtual.DelayedCall(yokaiMoveDuration + 0.5f, () => RotateBoard(boardRotationDuration, null));
+            DOVirtual.DelayedCall(yokaiMoveDuration + boardRotationDuration + 1f, () => OnBoardReady?.Invoke());
+        }
+        else
+        {
+            DOVirtual.DelayedCall(yokaiMoveDuration + 0.5f, () => OnBoardReady?.Invoke());
+        }
+        
         //DebugBoard();
     }
 
@@ -591,13 +603,14 @@ public class Board : MonoBehaviour
     }
 
     private Vector3 _currentBoardRotation;
-    public static void TryRotateBoard(Action onComplete) => Instance.RotateBoard(onComplete);
-    private void RotateBoard(Action onComplete)
+    public static void TryRotateBoard(Action onComplete) => Instance.RotateBoard(Instance.boardRotationDuration, onComplete);
+    public static void TryRotateBoard(float duration, Action onComplete) => Instance.RotateBoard(duration, onComplete);
+    private void RotateBoard(float duration, Action onComplete)
     {
         _currentBoardRotation = new Vector3(0, 0, _currentBoardRotation.z == 0 ? 180 : 0);
-        rotationPlatform.DORotate(_currentBoardRotation, boardRotationDuration);
+        rotationPlatform.DORotate(_currentBoardRotation, duration);
 
-        DOVirtual.DelayedCall(boardRotationDuration, () => onComplete?.Invoke());
+        DOVirtual.DelayedCall(duration, () => onComplete?.Invoke());
     }
 
     #endregion

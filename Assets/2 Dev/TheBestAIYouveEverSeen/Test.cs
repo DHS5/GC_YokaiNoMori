@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text;
 using UnityEngine;
 
 namespace Group15
@@ -13,10 +14,12 @@ namespace Group15
 
         public void DebugBoardState()
         {
-            BoardState boardState = new(gameManager.GetAllPawn());
-
-            Debug.Log(boardState);
-            Debug.Log(string.Format("0x{0:X}", 9760542094588389905));
+            StringBuilder sb = new StringBuilder();
+            foreach (var yokai in gameManager.GetAllPawn())
+            {
+                sb.AppendLine(yokai.GetPawnType() + " at " + yokai.GetCurrentPosition());
+            }
+            Debug.Log(sb.ToString());
         }
 
 
