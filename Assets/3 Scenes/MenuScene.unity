@@ -989,7 +989,7 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Intermediate
       m_Image: {fileID: 0}
-    - m_Text: Invincible
+    - m_Text: Master
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

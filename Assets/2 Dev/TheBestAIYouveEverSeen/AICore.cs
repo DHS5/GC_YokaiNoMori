@@ -105,7 +105,7 @@ namespace Group15
             {
                 case AILevel.DEBUTANT: return GetDebutantMove();
                 case AILevel.INTERMEDIATE: return GetIntermediateMove();
-                case AILevel.INVINCIBLE: return GetInvincibleMove();
+                case AILevel.INVINCIBLE: return GetMasterMove();
                 default: return null;
             }
         }
@@ -222,6 +222,14 @@ namespace Group15
         #region Intermediate Level
 
         private AIMove GetIntermediateMove()
+        {
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 6, MoveTree.Strategy.DEFENSE));
+            if (move != null) return move;
+
+            Debug.LogError("Move is null --> Random");
+            return GetRandomMove();
+        }
+        private AIMove GetMasterMove()
         {
             AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 8, MoveTree.Strategy.OFFENSE));
             if (move != null) return move;
