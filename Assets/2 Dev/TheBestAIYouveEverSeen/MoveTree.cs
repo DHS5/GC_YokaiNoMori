@@ -229,14 +229,16 @@ namespace Group15
             Vector2Int currentPos;
             Vector2Int newPos;
             Piece pieceAtNewPos;
+            List<Piece> parachutedPawns = new();
             foreach (var piecePos in ProcessedState)
             {
                 // Is mine
                 if (piecePos.Item1.GetCamp() == Camp)
                 {
                     // If is dead -> parachute
-                    if (piecePos.Item2 == Position.Dead)
+                    if (piecePos.Item2 == Position.Dead && !parachutedPawns.Contains(piecePos.Item1))
                     {
+                        parachutedPawns.Add(piecePos.Item1);
                         foreach (var emptyPos in EmptyPositions)
                         {
                             nextMove = new(piecePos.Item1, piecePos.Item2, emptyPos);
