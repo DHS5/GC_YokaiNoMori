@@ -240,10 +240,8 @@ namespace Group15
         {
             if (Round == 1)
             {
-                movesImporter.GetFileLines();
-                return Camp == ECampType.PLAYER_ONE ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
+                return FirstPlayer ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
             }
-            movesImporter.ParseFile(5000000);
 
             AIMove move;
             if (movesImporter.TryGetNextMove(new BoardState(YokaiList), out NextMove nextMove))
@@ -256,6 +254,7 @@ namespace Group15
                     return move;
                 }
             }
+            Debug.Log("fallback on intermediate");
             return GetIntermediateMove();
         }
 

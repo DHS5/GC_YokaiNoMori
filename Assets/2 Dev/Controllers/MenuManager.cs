@@ -6,6 +6,7 @@ public class MenuManager : MonoBehaviour
 {
     [SerializeField] private Toggle board4x3Toggle;
     [SerializeField] private GameObject dropdowns;
+    [SerializeField] private GameObject loadingScreen;
 
     private void Start()
     {
@@ -16,6 +17,7 @@ public class MenuManager : MonoBehaviour
 
     public void PlayGame()
     {
+        loadingScreen.SetActive(true);
         UnityEngine.SceneManagement.SceneManager.LoadScene(board4x3Toggle.isOn ? 1 : 2);
     }
 

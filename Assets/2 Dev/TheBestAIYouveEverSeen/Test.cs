@@ -15,6 +15,7 @@ namespace Group15
         public void DebugBoardState()
         {
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine(new BoardState(gameManager.GetAllPawn()).ToString());
             foreach (var yokai in gameManager.GetAllPawn())
             {
                 sb.AppendLine(yokai.GetPawnType() + " at " + yokai.GetCurrentPosition());

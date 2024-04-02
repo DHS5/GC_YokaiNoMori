@@ -46,7 +46,7 @@ namespace Group15
 
                 foreach (var move in moves)
                 {
-                    wins += move.Value.ComputeBestMove();
+                    wins += move.Value.GetWins();
                 }
 
                 return wins;
@@ -63,7 +63,7 @@ namespace Group15
                 Vector2Int result;
                 foreach (var move in moves)
                 {
-                    result = move.Value.ComputeBestMove();
+                    result = move.Value.GetWins();
                     if (Comparer(result, wins) <= 0)
                     {
                         wins = result;
@@ -141,17 +141,33 @@ namespace Group15
         }
 
         private bool hasComputedBestMove = false;
-        public Vector2Int ComputeBestMove()
+        //public Vector2Int ComputeBestMove()
+        //{
+        //    if (hasComputedBestMove) return Vector2Int.zero;
+        //
+        //    hasComputedBestMove = true;
+        //
+        //    if (IsPlayer)
+        //    {
+        //        return result.ComputeBestMove(Camp);
+        //    }
+        //    return result.GetWins(Camp.OppositeCamp());
+        //}
+        public void ComputeBestMove()
+        {
+            if (hasComputedBestMove) return;
+
+            hasComputedBestMove = true;
+
+            result.ComputeBestMove(Camp);
+        }
+        public Vector2Int GetWins()
         {
             if (hasComputedBestMove) return Vector2Int.zero;
 
             hasComputedBestMove = true;
 
-            if (IsPlayer)
-            {
-                return result.ComputeBestMove(Camp);
-            }
-            return result.GetWins(Camp.OppositeCamp());
+            return result.GetWins(IsPlayer ? Camp : Camp.OppositeCamp());
         }
 
         #endregion
@@ -344,8 +360,6 @@ namespace Group15
         public static NextMove GetBestMove(List<IPawn> state, ECampType camp, int depth)
         {
             MoveTree moveTree = new MoveTree(new BoardState(state), camp, true, depth);
-
-            moveTree.State.DebugBoardState();
 
             visited[ECampType.PLAYER_ONE].Clear();
             visited[ECampType.PLAYER_TWO].Clear();
