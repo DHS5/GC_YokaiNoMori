@@ -238,7 +238,7 @@ namespace Group15
 
         private AIMove GetInvincibleMove()
         {
-            if (Round == 1)
+            if (Round == 1 && FirstPlayer)
             {
                 return FirstPlayer ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
             }

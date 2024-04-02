@@ -37,8 +37,8 @@ namespace Group15
             fileRawContent = textAsset.text;
             Debug.Log("Loaded file");
             GetFileLines();
-            //ParseFile(35000000);
-            ParseFile(50000);
+            ParseFile(5000000);
+            //ParseFile(50000);
             Debug.Log("Dico length " + dico.Count);
         }
 

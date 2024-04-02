@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.ShaderGraph.Drawing;
@@ -51,7 +52,7 @@ namespace Group15
 
                 return wins;
             }
-            public Vector2Int ComputeBestMove(ECampType playerCamp)
+            public Vector2Int ComputeBestMove(ECampType playerCamp, Comparison<Vector2Int> comparison)
             {
                 if (hasBestMove || moves == null)
                 {
@@ -64,7 +65,8 @@ namespace Group15
                 foreach (var move in moves)
                 {
                     result = move.Value.GetWins();
-                    if (Comparer(result, wins) <= 0)
+                    //if (Comparer(result, wins) <= 0)
+                    if (comparison.Invoke(result, wins) <= 0)
                     {
                         wins = result;
                         bestMove = move.Key;
@@ -153,13 +155,13 @@ namespace Group15
         //    }
         //    return result.GetWins(Camp.OppositeCamp());
         //}
-        public void ComputeBestMove()
+        public void ComputeBestMove(Comparison<Vector2Int> comparison)
         {
             if (hasComputedBestMove) return;
 
             hasComputedBestMove = true;
 
-            result.ComputeBestMove(Camp);
+            result.ComputeBestMove(Camp, comparison);
         }
         public Vector2Int GetWins()
         {
@@ -238,6 +240,15 @@ namespace Group15
                                 else
                                 {
                                     PotentialMoves.Add((nextMove, nextBoard));
+                                }
+                            }
+                            else if (nextBoard.HasWinner(Camp, out ECampType winnerCamp))
+                            {
+                                // If there is a winner, check if it is us, if not don't add to potential moves
+                                if (winnerCamp == Camp)
+                                {
+                                    result = new Result(Camp, nextMove);
+                                    return;
                                 }
                             }
                             else
@@ -334,6 +345,11 @@ namespace Group15
                 result = new Result(Camp.OppositeCamp(), 0);
                 return;
             }
+            else if (PotentialMoves.Count == 1)
+            {
+                result = new Result(Camp, PotentialMoves[0].Item1);
+                return;
+            }
 
             foreach (var move in PotentialMoves)
             {
@@ -377,9 +393,23 @@ namespace Group15
                 moveTree.ComputeDepth(i);
             }
 
-            moveTree.ComputeBestMove();
+            moveTree.ComputeBestMove(OffensiveComparer);
 
             return moveTree.result.bestMove;
+
+
+            int DefensiveComparer(Vector2Int v1, Vector2Int v2)
+            {
+                if (v1.y != v2.y) return v1.y.CompareTo(v2.y);
+
+                return -v1.x.CompareTo(v2.x);
+            }
+            int OffensiveComparer(Vector2Int v1, Vector2Int v2)
+            {
+                if (v1.x != v2.x) return -v1.x.CompareTo(v2.x);
+
+                return v1.y.CompareTo(v2.y);
+            }
         }
 
         #endregion
