@@ -47,7 +47,7 @@ namespace Group15
 
                 foreach (var move in moves)
                 {
-                    wins += move.Value.GetWins();
+                    wins += move.Value.result.wins;
                 }
 
                 return wins;
@@ -64,7 +64,7 @@ namespace Group15
                 Vector2Int result;
                 foreach (var move in moves)
                 {
-                    result = move.Value.GetWins();
+                    result = move.Value.result.wins;
                     //if (Comparer(result, wins) <= 0)
                     if (comparison.Invoke(result, wins) <= 0)
                     {
@@ -73,14 +73,6 @@ namespace Group15
                     }
                 }
                 return wins;
-
-                // Local Comparer
-                int Comparer(Vector2Int v1, Vector2Int v2)
-                {
-                    if (v1.y != v2.y) return v1.y.CompareTo(v2.y);
-
-                    return -v1.x.CompareTo(v2.x);
-                }
             }
         }
 
@@ -163,13 +155,33 @@ namespace Group15
 
             result.ComputeBestMove(Camp, comparison);
         }
-        public Vector2Int GetWins()
+        //public Vector2Int GetWins()
+        //{
+        //    if (hasComputedBestMove) return Vector2Int.zero;
+        //
+        //    hasComputedBestMove = true;
+        //
+        //    return result.GetWins(IsPlayer ? Camp : Camp.OppositeCamp());
+        //}
+        public void GetWins(int depth)
         {
-            if (hasComputedBestMove) return Vector2Int.zero;
+            if (depth != Depth)
+            {
+                if (result.moves != null)
+                {
+                    foreach (var move in result.moves)
+                    {
+                        if (move.Value.Depth < Depth)
+                            move.Value.GetWins(depth);
+                    }
+                    return;
+                }
+            }
+            if (hasComputedBestMove) return;
 
             hasComputedBestMove = true;
 
-            return result.GetWins(IsPlayer ? Camp : Camp.OppositeCamp());
+            result.GetWins(IsPlayer ? Camp : Camp.OppositeCamp());
         }
 
         #endregion
@@ -368,12 +380,14 @@ namespace Group15
 
         #region Static Accessor
 
+        public enum Strategy { DEFENSE = 0, OFFENSE = 1 }
+
         private static Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited = new()
             {
                 { ECampType.PLAYER_ONE, new() }, { ECampType.PLAYER_TWO, new() }
             };
 
-        public static NextMove GetBestMove(List<IPawn> state, ECampType camp, int depth)
+        public static NextMove GetBestMove(List<IPawn> state, ECampType camp, int depth, Strategy strategy)
         {
             MoveTree moveTree = new MoveTree(new BoardState(state), camp, true, depth);
 
@@ -393,7 +407,19 @@ namespace Group15
                 moveTree.ComputeDepth(i);
             }
 
-            moveTree.ComputeBestMove(OffensiveComparer);
+            for (int i = 0; i < depth; i++)
+            {
+                moveTree.GetWins(i);
+            }
+
+            switch (strategy)
+            {
+                case Strategy.DEFENSE:
+                    moveTree.ComputeBestMove(DefensiveComparer); break;
+                case Strategy.OFFENSE:
+                    moveTree.ComputeBestMove(OffensiveComparer); break;
+            }
+            
 
             return moveTree.result.bestMove;
 

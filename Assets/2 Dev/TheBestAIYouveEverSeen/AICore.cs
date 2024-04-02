@@ -210,7 +210,7 @@ namespace Group15
 
         private AIMove GetDebutantMove()
         {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 1));
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 1, MoveTree.Strategy.OFFENSE));
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");
@@ -223,7 +223,7 @@ namespace Group15
 
         private AIMove GetIntermediateMove()
         {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 6));
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 8, MoveTree.Strategy.OFFENSE));
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");
