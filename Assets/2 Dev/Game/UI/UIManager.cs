@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     #region Global Members
 
     [Header("UI Manager")]
+    [SerializeField] private GameObject aiComputePanel;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private TextMeshProUGUI winnerText;
     [SerializeField] private TextMeshProUGUI playerText;
@@ -21,14 +22,17 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         GameManager.OnSetTurn += OnSetTurn;
+        AIController.OnAITurn += AICompute;
     }
     private void OnDisable()
     {
         GameManager.OnSetTurn -= OnSetTurn;
+        AIController.OnAITurn -= AICompute;
     }
 
     private void OnSetTurn(int playerIndex)
     {
+        AIEndCompute();
         if (playerIndex > 0)
         {
             playerText.text = "Player : " + playerIndex;
@@ -63,4 +67,15 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
+
+    private void AICompute()
+    {
+        Debug.Log("ai comp");
+        aiComputePanel.SetActive(true);
+    }
+    private void AIEndCompute()
+    {
+        Debug.Log("ai not comp");
+        aiComputePanel.SetActive(false);
+    }
 }

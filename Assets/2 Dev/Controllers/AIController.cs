@@ -1,13 +1,23 @@
 using Group15;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AIController : Controller
 {
+    public static event Action OnAITurn;
+
     public override void PrepareInput()
     {
-        Vector2Int format = Board.Format;
+        OnAITurn?.Invoke();
+
+        StartCoroutine(ComputeCR());
+    }
+
+    private IEnumerator ComputeCR()
+    {
+        yield return null;
         AI.ComputeMove();
     }
 

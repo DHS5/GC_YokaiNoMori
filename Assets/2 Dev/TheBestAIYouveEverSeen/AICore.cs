@@ -58,10 +58,10 @@ namespace Group15
             GameManager = gameManager;
             YokaiList = GameManager.GetAllPawn();
             BoardCases = GameManager.GetAllBoardCase();
-            if (level == AILevel.INVINCIBLE)
-            {
-                movesImporter = new AIMovesImporter(Camp);
-            }
+            //if (level == AILevel.INVINCIBLE)
+            //{
+            //    movesImporter = new AIMovesImporter(Camp);
+            //}
         }
         public AICore(int playerIndex, IGameManager gameManager)
         {
@@ -71,7 +71,7 @@ namespace Group15
             GameManager = gameManager;
             YokaiList = GameManager.GetAllPawn();
             BoardCases = GameManager.GetAllBoardCase();
-            movesImporter = new AIMovesImporter(Camp);
+            //movesImporter = new AIMovesImporter(Camp);
         }
         #endregion
 

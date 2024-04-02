@@ -54,8 +54,6 @@ namespace Group15
             }
             public Vector2Int ComputeBestMove(ECampType playerCamp, Comparison<Vector2Int> comparison)
             {
-                Debug.Log("compute best move");
-
                 if (hasBestMove || moves == null)
                 {
                     wins = winnerCamp == ECampType.NONE ? Vector2Int.zero : (winnerCamp == playerCamp ? Vector2Int.right : Vector2Int.up);
@@ -63,7 +61,7 @@ namespace Group15
                     return wins;
                 }
 
-                wins = new Vector2Int(-100, 100);
+                wins = new Vector2Int(int.MinValue, int.MaxValue);
                 Vector2Int result;
                 foreach (var move in moves)
                 {
@@ -75,7 +73,6 @@ namespace Group15
                         bestMove = move.Key;
                     }
                 }
-                Debug.Log("computed best move : " + bestMove);
                 return wins;
             }
         }
