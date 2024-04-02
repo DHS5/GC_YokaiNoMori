@@ -58,6 +58,10 @@ namespace Group15
             GameManager = gameManager;
             YokaiList = GameManager.GetAllPawn();
             BoardCases = GameManager.GetAllBoardCase();
+            if (level == AILevel.INVINCIBLE)
+            {
+                movesImporter = new AIMovesImporter(Camp);
+            }
         }
         public AICore(int playerIndex, IGameManager gameManager)
         {
@@ -67,6 +71,7 @@ namespace Group15
             GameManager = gameManager;
             YokaiList = GameManager.GetAllPawn();
             BoardCases = GameManager.GetAllBoardCase();
+            movesImporter = new AIMovesImporter(Camp);
         }
         #endregion
 
@@ -76,6 +81,7 @@ namespace Group15
         private AILevel Level { get; set; }
         private ECampType Camp { get; set; }
         private IGameManager GameManager { get; set; }
+        private int Round { get; set; } = 0;
 
         #endregion
 
@@ -83,6 +89,8 @@ namespace Group15
 
         public void ComputeMove()
         {
+            Round++;
+
             AnalyzeYokais();
             GetEmptyBoardCases();
             ComputeAllPotentialMoves();
@@ -230,13 +238,34 @@ namespace Group15
 
         private AIMove GetInvincibleMove()
         {
+            if (Round == 1)
+            {
+                movesImporter.GetFileLines();
+                return Camp == ECampType.PLAYER_ONE ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
+            }
+            movesImporter.ParseFile(5000000);
+
             AIMove move;
             if (movesImporter.TryGetNextMove(new BoardState(YokaiList), out NextMove nextMove))
             {
+                Debug.Log("Found move in moves importer");
                 move = GetAIMoveFromNextMove(nextMove);
-                if (move != null) return move;
+                if (move != null)
+                {
+                    Debug.Log("and it's not null");
+                    return move;
+                }
             }
             return GetIntermediateMove();
+        }
+
+        private AIMove GetInvincibleJ1Move1()
+        {
+            return new AIMove(OwnYokais.Find(y => y.GetPawnType() == EPawnType.Kodama), new Vector2Int(1, 2));
+        }
+        private AIMove GetInvincibleJ2Move1()
+        {
+            return new AIMove(OwnYokais.Find(y => y.GetPawnType() == EPawnType.Tanuki), new Vector2Int(0, 2));
         }
 
         #endregion
