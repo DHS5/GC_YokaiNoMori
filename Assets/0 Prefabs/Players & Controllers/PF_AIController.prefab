@@ -45,4 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  level: 1
+  j1MovesImporter: {fileID: 11400000, guid: 2d4fb3b2b5a72bc458bcc9ca10dd7c0e, type: 2}
+  j2MovesImporter: {fileID: 11400000, guid: 062c12f82aab94a4fa1bc4c24e62382d, type: 2}

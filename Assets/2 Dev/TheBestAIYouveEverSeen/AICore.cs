@@ -63,15 +63,16 @@ namespace Group15
             //    movesImporter = new AIMovesImporter(Camp);
             //}
         }
-        public AICore(int playerIndex, IGameManager gameManager)
+        public AICore(ECampType camp, IGameManager gameManager, AIMovesImporter _movesImporter)
         {
-            FirstPlayer = playerIndex == 1;
-            Camp = FirstPlayer ? ECampType.PLAYER_ONE : ECampType.PLAYER_TWO;
+            FirstPlayer = camp == ECampType.PLAYER_ONE;
+            Camp = camp;
             Level = AILevel.INVINCIBLE;
             GameManager = gameManager;
             YokaiList = GameManager.GetAllPawn();
             BoardCases = GameManager.GetAllBoardCase();
-            //movesImporter = new AIMovesImporter(Camp);
+            movesImporter = _movesImporter;
+            movesImporter.ParseNumbers();
         }
         #endregion
 
@@ -87,13 +88,16 @@ namespace Group15
 
         #region Behaviour
 
+        public void GetDatas()
+        {
+            AnalyzeYokais();
+        }
+
         public void ComputeMove()
         {
             Round++;
 
-            AnalyzeYokais();
-            GetEmptyBoardCases();
-            ComputeAllPotentialMoves();
+            GetDatas();// TO REMOVE
 
             AIMove move = GetMoveByLevel();
             GameManager.DoAction(move.yokai, move.newPosition, move.actionType);
@@ -105,7 +109,7 @@ namespace Group15
             {
                 case AILevel.DEBUTANT: return GetDebutantMove();
                 case AILevel.INTERMEDIATE: return GetIntermediateMove();
-                case AILevel.INVINCIBLE: return GetMasterMove();
+                case AILevel.INVINCIBLE: return GetInvincibleMove();
                 default: return null;
             }
         }
@@ -164,6 +168,8 @@ namespace Group15
         }
         private void ComputeAllPotentialMoves()
         {
+            GetEmptyBoardCases();
+
             PotentialMoves.Clear();
 
             Vector2Int newPos;
@@ -201,6 +207,8 @@ namespace Group15
 
         private AIMove GetRandomMove()
         {
+            ComputeAllPotentialMoves();
+
             return PotentialMoves[UnityEngine.Random.Range(0, PotentialMoves.Count)];
         }
 
@@ -246,21 +254,50 @@ namespace Group15
 
         private AIMove GetInvincibleMove()
         {
+            // Hardcoded moves
             if (Round == 1 && FirstPlayer)
             {
                 return FirstPlayer ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
             }
 
+            // Get potential moves
+            List<NextMove> potentialMoves = MoveTree.GetPotentialMoves(YokaiList, Camp);
+            if (potentialMoves == null || potentialMoves.Count == 0)
+            {
+                Debug.Log("No potential moves --> random");
+                return GetRandomMove(); // If no moves do random
+            }
+            if (potentialMoves.Count == 1)
+            {
+                Debug.Log("Only one potential move !");
+                return GetAIMoveFromNextMove(potentialMoves[0]);
+            }
+
+            // Search for perfect move
             AIMove move;
             if (movesImporter.TryGetNextMove(new BoardState(YokaiList), out NextMove nextMove))
             {
                 Debug.Log("Found move in moves importer");
-                move = GetAIMoveFromNextMove(nextMove);
-                if (move != null)
+                if (potentialMoves.Contains(nextMove))
                 {
-                    Debug.Log("and it's not null");
-                    return move;
+                    Debug.Log("Contained in potential moves");
+                    move = GetAIMoveFromNextMove(nextMove);
+                    if (move != null)
+                    {
+                        Debug.Log("And it's not null");
+                        return move;
+                    }
                 }
+                else
+                {
+                    (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
+                    Debug.LogError("Move " + nextMoveInfo.piece + " from " + nextMoveInfo.oldPos + " to " + nextMoveInfo.nextPos 
+                        + " is not contained in potential moves");
+                }
+            }
+            else
+            {
+                Debug.Log("Didn't found move in importer");
             }
             Debug.Log("fallback on intermediate");
             return GetIntermediateMove();
@@ -285,22 +322,31 @@ namespace Group15
                 return null;
             }
 
+            // Get Next move infos
             (Piece piece, Position oldPos, Position nextPos) nextMoveInfo = nextMove;
             EPawnType pawnType = BoardState.GetPawnTypeFromPiece(nextMoveInfo.piece);
             Vector2Int oldPosition = nextMoveInfo.oldPos.ToVector();
 
+            // Search for own yokai with those caracteristics
             IPawn yokai = OwnYokais.Find(y => y.GetPawnType() == pawnType && y.GetCurrentPosition() == oldPosition);
             if (yokai != null)
                 return new(yokai, nextMoveInfo.nextPos.ToVector());
 
+            Debug.LogError("Couldn't find own yokai of type " + pawnType + " at position " + oldPosition);
+
+            // If yokai null, maybe a Chick is a Hen or something like that
+            // so try to search only with position
             yokai = OwnYokais.Find(y => y.GetCurrentPosition() == oldPosition);
             if (yokai != null)
             {
+                Debug.Log("found yokai " + yokai.GetPawnType() + " at position " + oldPosition);
+                // then check if the move is valid
+                ComputeAllPotentialMoves();
                 AIMove move = new(yokai, nextMoveInfo.nextPos.ToVector());
                 if (PotentialMoves.Contains(move)) return move;
+                Debug.LogError("Couldn't find potential move for yokai " + yokai.GetPawnType() + " to position " + nextMoveInfo.nextPos.ToVector());
             }
 
-            Debug.LogError("Couldn't find own yokai of type " + pawnType + " at position " + oldPosition);
             foreach (var yk in OwnYokais)
             {
                 Debug.Log(yk.GetPawnType() + " " + yk.GetCurrentPosition());

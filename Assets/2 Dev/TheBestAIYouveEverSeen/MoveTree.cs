@@ -121,7 +121,7 @@ namespace Group15
                 Origin = origin;
 
                 ComputeBoard();
-                ComputePotentialMoves(depth);
+                ComputePotentialMoves();
                 visited[Camp].TryAdd(State, this);
                 return;
             }
@@ -218,7 +218,7 @@ namespace Group15
 
         #region Computations
 
-        private void ComputePotentialMoves(int depth)
+        private void ComputePotentialMoves()
         {
             PotentialMoves = new();
             result = new Result(false);
@@ -372,7 +372,7 @@ namespace Group15
                 }
                 else
                 {
-                    result.moves.TryAdd(move.Item1, new MoveTree(move.Item2, Camp.OppositeCamp(), !IsPlayer, depth - 1));
+                    result.moves.TryAdd(move.Item1, new MoveTree(move.Item2, Camp.OppositeCamp(), !IsPlayer, Depth - 1));
                 }
             }
         }
@@ -421,8 +421,6 @@ namespace Group15
                     moveTree.ComputeBestMove(OffensiveComparer); break;
             }
 
-            Debug.Log("Potential Moves : " + moveTree.PotentialMoves.Count + " / best move : " + moveTree.result.bestMove);
-
             return moveTree.result.bestMove;
 
 
@@ -438,6 +436,23 @@ namespace Group15
 
                 return v1.y.CompareTo(v2.y);
             }
+        }
+
+        public static List<NextMove> GetPotentialMoves(List<IPawn> state, ECampType camp)
+        {
+            MoveTree moveTree = new MoveTree(new BoardState(state), camp, true, 1);
+            moveTree.ComputeBoard();
+            moveTree.ComputePotentialMoves();
+
+            if (moveTree.result.hasBestMove)
+            {
+                if (moveTree.result.winnerCamp == camp)
+                    return new List<NextMove> { moveTree.result.bestMove };
+                return null;
+            }
+                
+
+            return moveTree.PotentialMoves.ConvertAll(m => m.Item1);
         }
 
         #endregion

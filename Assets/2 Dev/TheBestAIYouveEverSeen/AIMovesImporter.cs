@@ -6,84 +6,93 @@ using YokaiNoMori.Enumeration;
 
 namespace Group15
 {
-    public class AIMovesImporter
+    [CreateAssetMenu(fileName = "AI Moves Importer", menuName = "AI Moves Importer")]
+    public class AIMovesImporter : ScriptableObject
     {
         #region Global Members
 
-        public const string player1MovesFileName = "w_16";
-        public const string player2MovesFileName = "b_15";
+        [SerializeField] private TextAsset textAsset;
 
         private string fileRawContent;
         private string[] fileLines;
-        private int linesParsed = 0;
+
+        [SerializeField] private List<ulong> ulongs = new();
+        [SerializeField] private List<ushort> ushorts = new();
+
+        #endregion
+
+        #region Runtime Members
 
         private Dictionary<BoardState, NextMove> dico;
 
         #endregion
 
-        #region Constructor
+        #region Editor Parsing
 
-        public AIMovesImporter(ECampType eCampType)
+        [ContextMenu("Parse File")]
+        private void ParseFile()
         {
-            TextAsset textAsset = Resources.Load<TextAsset>(eCampType == ECampType.PLAYER_ONE ? player1MovesFileName : player2MovesFileName);
+            GetFileLines();
+            ParseLines();
+        }
 
+        [ContextMenu("Clear Lists")]
+        private void ClearLists()
+        {
+            ulongs.Clear();
+            ushorts.Clear();
+        }
+
+
+        private void GetFileLines()
+        {
             if (textAsset == null)
             {
-                Debug.LogError("Couldn't find file");
+                Debug.LogError("Text asset is null");
                 return;
             }
 
-            dico = new Dictionary<BoardState, NextMove>();
             fileRawContent = textAsset.text;
-            Debug.Log("Loaded file");
-            GetFileLines();
-            ParseFile(5000000);
-            //ParseFile(50000);
-            Debug.Log("Dico length " + dico.Count);
-        }
-
-        #endregion
-
-        #region Parsing
-
-        public void GetFileLines()
-        {
             fileLines = fileRawContent.Split('\n');
             Debug.Log("Split file in " + fileLines.Length + " lines");
             fileRawContent = null;
         }
 
-        public void ParseFile(int lineNumber)
+        private void ParseLines()
         {
-            if (linesParsed >= fileLines.Length) return;
+            ulongs.Clear();
+            ushorts.Clear();
 
             string[] lineContent;
-            int i;
-            for (i = linesParsed; i < linesParsed + lineNumber; i++)
+            for (int i = 0; i < fileLines.Length; i++)
             {
-                if (i >= fileLines.Length)
-                {
-                    fileLines = null;
-                    break;
-                }
-
                 lineContent = fileLines[i].Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (lineContent.Length >= 2)
                 {
-                    if (!dico.TryAdd(new BoardState(lineContent[0]), new NextMove(lineContent[1])))
-                    {
-                        //Debug.Log("board " + lineContent[0] + " is already in the dico");
-                        Debug.Log("duplicate");
-                    }
-                }
-                else
-                {
-                    Debug.Log("line " + fileLines[i] + " could not be split correctly");
+                    ulongs.Add(Convert.ToUInt64(lineContent[0], 16));
+                    ushorts.Add(Convert.ToUInt16(lineContent[1], 16));
                 }
             }
-            Debug.Log("Parsed " + (i - linesParsed) + " new lines");
 
-            linesParsed = i;
+            Debug.Log("ULong : " + ulongs.Count + " / UShort : " + ushorts.Count);
+        }
+
+        #endregion
+
+        #region Runtime Parsing
+
+        public void ParseNumbers()
+        {
+            dico = new();
+
+            for (int i = 0; i < ulongs.Count; i++)
+            {
+                if (!dico.TryAdd(new BoardState(ulongs[i]), ushorts[i]))
+                {
+                    Debug.Log("duplicate");
+                }
+            }
+            Debug.Log("Dico contains " + dico.Count + " boards");
         }
 
         #endregion

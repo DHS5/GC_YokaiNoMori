@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YokaiNoMori.Enumeration;
 
 public class AIController : Controller
 {
@@ -27,9 +28,12 @@ public class AIController : Controller
 
     public static AILevel Level;
 
+    [SerializeField] private AIMovesImporter j1MovesImporter;
+    [SerializeField] private AIMovesImporter j2MovesImporter;
+
     protected override void OnAssignPlayer()
     {
-        AI = new(player.Index, Level, GameManager.Instance);
+        AI = new((ECampType)player.Index, GameManager.Instance, player.Index == 1 ? j1MovesImporter : j2MovesImporter);
     }
 
     #endregion

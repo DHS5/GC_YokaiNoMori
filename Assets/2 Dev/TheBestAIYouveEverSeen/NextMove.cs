@@ -38,15 +38,26 @@ namespace Group15
             return nextMove.move;
         }
 
+        //public (byte, byte) GetCurrentAndNext(ECampType camp)
+        //{
+        //    Position newPosition = (Position)(move & 0x00f);
+        //    Position oldPosition = (Position)((move & 0x0f0) >> 4);
+        //    Piece piece = (Piece)((move & 0xf00) >> 4);
+        //
+        //    byte b_piece = (byte)piece.TransformFromMovement(camp, oldPosition, newPosition);
+        //
+        //    return ((byte)(b_piece + (byte)oldPosition), (byte)(b_piece + (byte)newPosition));
+        //}
         public (byte, byte) GetCurrentAndNext(ECampType camp)
         {
             Position newPosition = (Position)(move & 0x00f);
             Position oldPosition = (Position)((move & 0x0f0) >> 4);
-            Piece piece = (Piece)((move & 0xf00) >> 4);
+            Piece piece = (Piece)((move & 0xf00) >> 8);
 
-            byte b_piece = (byte)piece.TransformFromMovement(camp, oldPosition, newPosition);
+            byte old_piece = (byte)((byte)piece << 4);
+            byte new_piece = (byte)((byte)piece.TransformFromMovement(camp, oldPosition, newPosition) << 4);
 
-            return ((byte)(b_piece + (byte)oldPosition), (byte)(b_piece + (byte)newPosition));
+            return ((byte)(old_piece + (byte)oldPosition), (byte)(new_piece + (byte)newPosition));
         }
 
         #region Computation

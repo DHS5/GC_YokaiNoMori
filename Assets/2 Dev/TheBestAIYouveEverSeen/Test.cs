@@ -22,23 +22,5 @@ namespace Group15
             }
             Debug.Log(sb.ToString());
         }
-
-
-        private int step = 0;
-        AIMovesImporter importer;
-
-        public void ParseTextAsset()
-        {
-            switch (step)
-            {
-                case 0:
-                    importer = new AIMovesImporter(YokaiNoMori.Enumeration.ECampType.PLAYER_TWO); break;
-                case 1:
-                    importer.GetFileLines(); break;
-                default:
-                    importer.ParseFile(5000000); break;
-            }
-            step++;
-        }
     }
 }

@@ -70,12 +70,10 @@ public class UIManager : MonoBehaviour
 
     private void AICompute()
     {
-        Debug.Log("ai comp");
         aiComputePanel.SetActive(true);
     }
     private void AIEndCompute()
     {
-        Debug.Log("ai not comp");
         aiComputePanel.SetActive(false);
     }
 }
