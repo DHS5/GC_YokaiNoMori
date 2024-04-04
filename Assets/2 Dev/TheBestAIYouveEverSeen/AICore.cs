@@ -50,18 +50,14 @@ namespace Group15
         #endregion
 
         #region Constructor
-        public AICore(int playerIndex, AILevel level, IGameManager gameManager)
+        public AICore(ECampType camp, AILevel level, IGameManager gameManager)
         {
-            FirstPlayer = playerIndex == 1;
-            Camp = FirstPlayer ? ECampType.PLAYER_ONE : ECampType.PLAYER_TWO;
+            FirstPlayer = camp == ECampType.PLAYER_ONE;
+            Camp = camp;
             Level = level;
             GameManager = gameManager;
             YokaiList = GameManager.GetAllPawn();
             BoardCases = GameManager.GetAllBoardCase();
-            //if (level == AILevel.INVINCIBLE)
-            //{
-            //    movesImporter = new AIMovesImporter(Camp);
-            //}
         }
         public AICore(ECampType camp, IGameManager gameManager, AIMovesImporter _movesImporter)
         {
@@ -231,7 +227,7 @@ namespace Group15
 
         private AIMove GetIntermediateMove()
         {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 6, MoveTree.Strategy.DEFENSE));
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 6, MoveTree.Strategy.PROBA));
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");

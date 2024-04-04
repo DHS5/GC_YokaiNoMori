@@ -33,7 +33,10 @@ public class AIController : Controller
 
     protected override void OnAssignPlayer()
     {
-        AI = new((ECampType)player.Index, GameManager.Instance, player.Index == 1 ? j1MovesImporter : j2MovesImporter);
+        if (Level == AILevel.INVINCIBLE)
+            AI = new((ECampType)player.Index, GameManager.Instance, player.Index == 1 ? j1MovesImporter : j2MovesImporter);
+        else
+            AI = new((ECampType)player.Index, Level, GameManager.Instance);
     }
 
     #endregion

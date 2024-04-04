@@ -50,27 +50,39 @@ namespace Group15
 
                 return wins;
             }
-            public Vector2Int ComputeBestMove(ECampType playerCamp, Comparison<Vector2Int> comparison)
+            public Vector2Int ComputeBestMove(ECampType playerCamp)
             {
                 if (hasBestMove || moves == null)
                 {
                     wins = winnerCamp == ECampType.NONE ? Vector2Int.zero : (winnerCamp == playerCamp ? Vector2Int.right : Vector2Int.up);
-                    Debug.Log("already has best move for " + winnerCamp);
                     return wins;
                 }
 
                 wins = new Vector2Int(int.MinValue, int.MaxValue);
-                Vector2Int result;
                 foreach (var move in moves)
                 {
-                    result = move.Value.result.wins;
                     //if (Comparer(result, wins) <= 0)
-                    if (comparison.Invoke(result, wins) <= 0)
+                    if (move.Value.result.winnerCamp == playerCamp.OppositeCamp()) continue;
+                    if (move.Value.result.winnerCamp == playerCamp)
                     {
-                        wins = result;
+                        hasBestMove = true;
                         bestMove = move.Key;
+                        return Vector2Int.right;
+                    }
+                    if (bestMoveComparison.Invoke(move.Value.result.wins, wins) <= 0)
+                    {
+                        wins = move.Value.result.wins;
+                        bestMove = move.Key;
+                        hasBestMove = true;
                     }
                 }
+
+                if (!hasBestMove)
+                {
+                    winnerCamp = playerCamp.OppositeCamp();
+                    return Vector2Int.up;
+                }
+
                 return wins;
             }
         }
@@ -108,7 +120,7 @@ namespace Group15
 
         #endregion
 
-        #region Accessors
+        #region Depth Computation
 
         private bool hasComputedDepth = false;
         private void ComputeDepth(int depth, bool origin)
@@ -135,6 +147,10 @@ namespace Group15
             }
         }
 
+        #endregion
+
+        #region Best Move Computation
+
         private bool hasComputedBestMove = false;
         //public Vector2Int ComputeBestMove()
         //{
@@ -148,9 +164,10 @@ namespace Group15
         //    }
         //    return result.GetWins(Camp.OppositeCamp());
         //}
-        public void ComputeBestMove(Comparison<Vector2Int> comparison)
+        private static Comparison<Vector2Int> bestMoveComparison;
+        public void ComputeBestMove()
         {
-            result.ComputeBestMove(Camp, comparison);
+            result.ComputeBestMove(Camp);
         }
         //public Vector2Int GetWins()
         //{
@@ -169,7 +186,9 @@ namespace Group15
                     foreach (var move in result.moves)
                     {
                         if (move.Value.Depth < Depth)
+                        {
                             move.Value.GetWins(depth);
+                        }
                     }
                     return;
                 }
@@ -178,7 +197,10 @@ namespace Group15
 
             hasComputedBestMove = true;
 
-            result.GetWins(IsPlayer ? Camp : Camp.OppositeCamp());
+            if (IsPlayer)
+                result.ComputeBestMove(Camp);
+            else
+                result.GetWins(Camp.OppositeCamp());
         }
 
         #endregion
@@ -379,7 +401,7 @@ namespace Group15
 
         #region Static Accessor
 
-        public enum Strategy { DEFENSE = 0, OFFENSE = 1 }
+        public enum Strategy { DEFENSE = 0, OFFENSE = 1, PROBA = 2 }
 
         private static Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited = new()
             {
@@ -406,18 +428,22 @@ namespace Group15
                 moveTree.ComputeDepth(i, false);
             }
 
+            switch (strategy)
+            {
+                case Strategy.DEFENSE:
+                    bestMoveComparison = DefensiveComparer; break;
+                case Strategy.OFFENSE:
+                    bestMoveComparison = OffensiveComparer; break;
+                case Strategy.PROBA:
+                    bestMoveComparison = ProbaComparer; break;
+            }
             for (int i = 0; i < depth; i++)
             {
                 moveTree.GetWins(i);
             }
 
-            switch (strategy)
-            {
-                case Strategy.DEFENSE:
-                    moveTree.ComputeBestMove(DefensiveComparer); break;
-                case Strategy.OFFENSE:
-                    moveTree.ComputeBestMove(OffensiveComparer); break;
-            }
+            moveTree.ComputeBestMove();
+
 
             return moveTree.result.bestMove;
 
@@ -433,6 +459,13 @@ namespace Group15
                 if (v1.x != v2.x) return -v1.x.CompareTo(v2.x);
 
                 return v1.y.CompareTo(v2.y);
+            }
+            int ProbaComparer(Vector2Int v1, Vector2Int v2)
+            {
+                if (v1.y == 0 && v2.y == 0) return -v1.x.CompareTo(v2.x);
+                if (v1.y == 0) return -1;
+                if (v2.y == 0) return 1;
+                return ((float)v1.x / v1.y).CompareTo((float)v2.x/v2.y);
             }
         }
 
