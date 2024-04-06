@@ -293,7 +293,7 @@ namespace Group15
             }
             else
             {
-                Debug.Log("Didn't found move in importer");
+                Debug.Log("Didn't found move in importer : " + new BoardState(YokaiList));
             }
             Debug.Log("fallback on intermediate");
             return GetIntermediateMove();

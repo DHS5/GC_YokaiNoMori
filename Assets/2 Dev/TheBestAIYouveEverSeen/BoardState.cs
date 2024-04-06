@@ -127,10 +127,11 @@ namespace Group15
                 return this;
             }
             List<byte> result = newBytes.ToList();
-            result.Sort((b1, b2) => (b1 & 0xf0).CompareTo(b2 & 0xf0));
+            result.Sort((b1, b2) => b1.CompareTo(b2));
 
             return new(BitConverter.ToUInt64(result.ToArray()));
         }
+
         public BoardState ComputeChildFromNextMoveOnEmptySpace(NextMove nextMove, ECampType camp)
         {
             (byte current, byte next) = nextMove.GetCurrentAndNext(camp);
@@ -159,7 +160,10 @@ namespace Group15
                 return this;
             }
 
-            return new(BitConverter.ToUInt64(newBytes));
+            List<byte> result = newBytes.ToList();
+            result.Sort((b1, b2) => b1.CompareTo(b2));
+
+            return new(BitConverter.ToUInt64(result.ToArray()));
         }
 
         #endregion

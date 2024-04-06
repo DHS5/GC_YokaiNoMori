@@ -16,8 +16,8 @@ namespace Group15
         private string fileRawContent;
         private string[] fileLines;
 
-        [SerializeField] private List<ulong> ulongs = new();
-        [SerializeField] private List<ushort> ushorts = new();
+        [SerializeField, HideInInspector] private List<ulong> ulongs = new();
+        [SerializeField, HideInInspector] private List<ushort> ushorts = new();
 
         #endregion
 
@@ -41,6 +41,16 @@ namespace Group15
         {
             ulongs.Clear();
             ushorts.Clear();
+        }
+
+        [ContextMenu("Print Lists")]
+        private void PrintLists()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                Debug.Log(ulongs[i] + " " + ushorts[i]);
+            }
+            Debug.Log("ULong : " + ulongs.Count + " / UShort : " + ushorts.Count);
         }
 
 
