@@ -374,7 +374,7 @@ namespace Group15
 
             if (PotentialMoves.Count == 0)
             {
-                if (Origin) Debug.Log(Camp + " couldn't find moves in depth 6");
+                if (Origin) Debug.Log(Camp + " couldn't find moves in origin depth");
                 result = new Result(Camp.OppositeCamp(), 0);
                 return;
             }
@@ -471,7 +471,11 @@ namespace Group15
 
         public static List<NextMove> GetPotentialMoves(List<IPawn> state, ECampType camp)
         {
+            visited[ECampType.PLAYER_ONE].Clear();
+            visited[ECampType.PLAYER_TWO].Clear();
+
             MoveTree moveTree = new MoveTree(new BoardState(state), camp, true, 1);
+
             moveTree.ComputeBoard();
             moveTree.ComputePotentialMoves();
 

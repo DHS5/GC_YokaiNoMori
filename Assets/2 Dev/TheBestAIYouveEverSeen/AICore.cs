@@ -273,7 +273,7 @@ namespace Group15
             AIMove move;
             if (movesImporter.TryGetNextMove(new BoardState(YokaiList), out NextMove nextMove))
             {
-                Debug.Log("Found move in moves importer");
+                Debug.Log("Found move in moves importer : " + new BoardState(YokaiList));
                 if (potentialMoves.Contains(nextMove))
                 {
                     Debug.Log("Contained in potential moves");
