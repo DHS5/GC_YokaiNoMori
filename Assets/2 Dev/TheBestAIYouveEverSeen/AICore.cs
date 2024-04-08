@@ -98,6 +98,25 @@ namespace Group15
             AIMove move = GetMoveByLevel();
             GameManager.DoAction(move.yokai, move.newPosition, move.actionType);
         }
+        public void ComputeTournamentMove()
+        {
+            Round++;
+            HasDoneAction = false;
+
+            AIMove move = GetMoveByLevel();
+
+            HasDoneAction = move != null;
+            GameManager.DoAction(move.yokai, move.newPosition, move.actionType);
+        }
+
+        public bool HasDoneAction { get; private set; }
+
+        public void StopTurn()
+        {
+            if (HasDoneAction) return;
+
+            GetRandomPotentialMove();
+        }
 
         private AIMove GetMoveByLevel()
         {
@@ -231,7 +250,7 @@ namespace Group15
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");
-            return GetRandomMove();
+            return GetRandomPotentialMove();
         }
         private AIMove GetMasterMove()
         {
@@ -248,6 +267,8 @@ namespace Group15
 
         private AIMovesImporter movesImporter;
 
+        List<NextMove> potentialMoves;
+
         private AIMove GetInvincibleMove()
         {
             // Hardcoded moves
@@ -257,7 +278,7 @@ namespace Group15
             }
 
             // Get potential moves
-            List<NextMove> potentialMoves = MoveTree.GetPotentialMoves(YokaiList, Camp);
+            potentialMoves = MoveTree.GetPotentialMoves(YokaiList, Camp);
             if (potentialMoves == null || potentialMoves.Count == 0)
             {
                 Debug.Log("No potential moves --> random");
@@ -297,6 +318,11 @@ namespace Group15
             }
             Debug.Log("fallback on intermediate");
             return GetIntermediateMove();
+        }
+
+        private AIMove GetRandomPotentialMove()
+        {
+            return GetAIMoveFromNextMove(potentialMoves[UnityEngine.Random.Range(0, potentialMoves.Count)]);
         }
 
         private AIMove GetInvincibleJ1Move1()

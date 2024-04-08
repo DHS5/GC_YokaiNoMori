@@ -35,7 +35,7 @@ namespace Group15
 
         public void StartTurn()
         {
-            aiCore.ComputeMove();
+            aiCore.ComputeTournamentMove();
         }
         public void StopTurn()
         {
