@@ -334,7 +334,7 @@ public class Board : MonoBehaviour
 
         if (ControllerManager.CurrentMode == ControllerManager.Mode.HUMAN_v_AI && !ControllerManager.HumanFirst)
         {
-            DOVirtual.DelayedCall(yokaiMoveDuration + 0.5f, () => RotateBoard(boardRotationDuration, null));
+            //DOVirtual.DelayedCall(yokaiMoveDuration + 0.5f, () => RotateBoard(boardRotationDuration, null));
             DOVirtual.DelayedCall(yokaiMoveDuration + boardRotationDuration + 1f, () => OnBoardReady?.Invoke());
         }
         else

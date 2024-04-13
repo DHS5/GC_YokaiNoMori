@@ -79,8 +79,6 @@ namespace Group15
 
             byte b1;
             byte b2;
-            int shift;
-            ulong mask;
             List<byte> bytes = new();
             for (int i = 0; i < pieces.Count; i++)
             {
@@ -88,10 +86,6 @@ namespace Group15
                 b2 = (byte)pieces[i].Item2;
                 byte pieceAndPos = (byte)((b1 << 4) + b2);
                 bytes.Add(pieceAndPos);
-                //shift = i * 8;
-                //mask = (ulong)0xff << shift;
-                //
-                //board = (board & ~mask) | ((ulong)pieceAndPos << shift);
             }
 
             bytes.Sort((b1, b2) => b1.CompareTo(b2));

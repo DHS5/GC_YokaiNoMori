@@ -241,24 +241,24 @@ namespace Group15
         }
 
         #endregion
-        
+
         #region Intermediate Level
 
+        private int depth = 6;
         private AIMove GetIntermediateMove()
         {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 6, MoveTree.Strategy.PROBA));
+            // Hardcoded moves
+            if (Round == 1)
+            {
+                return FirstPlayer ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
+            }
+
+            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, depth, MoveTree.Strategy.PROBA));
+            if (depth == 6) depth = 7;
             if (move != null) return move;
 
             Debug.LogError("Move is null --> Random");
             return GetRandomPotentialMove();
-        }
-        private AIMove GetMasterMove()
-        {
-            AIMove move = GetAIMoveFromNextMove(MoveTree.GetBestMove(YokaiList, Camp, 8, MoveTree.Strategy.OFFENSE));
-            if (move != null) return move;
-
-            Debug.LogError("Move is null --> Random");
-            return GetRandomMove();
         }
 
         #endregion
@@ -272,7 +272,7 @@ namespace Group15
         private AIMove GetInvincibleMove()
         {
             // Hardcoded moves
-            if (Round == 1 && FirstPlayer)
+            if (Round == 1)
             {
                 return FirstPlayer ? GetInvincibleJ1Move1() : GetInvincibleJ2Move1();
             }
@@ -331,7 +331,15 @@ namespace Group15
         }
         private AIMove GetInvincibleJ2Move1()
         {
-            return new AIMove(OwnYokais.Find(y => y.GetPawnType() == EPawnType.Tanuki), new Vector2Int(0, 2));
+            BoardState boardState = new BoardState(YokaiList);
+            Dictionary<BoardState, NextMove> moves = new Dictionary<BoardState, NextMove>()
+            {
+                { new BoardState("7C7769524B302A11"), new NextMove("4B7") },
+                { new BoardState("877469524B302A15"), new NextMove("696") },
+                { new BoardState("877469524B302A13"), new NextMove("696") },
+                { new BoardState("877469554B302A11"), new NextMove("696") }
+            };
+            return GetAIMoveFromNextMove(moves[boardState]);
         }
 
         #endregion

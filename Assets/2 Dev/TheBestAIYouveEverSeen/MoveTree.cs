@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using YokaiNoMori.Enumeration;
 using YokaiNoMori.Interface;
@@ -85,6 +86,17 @@ namespace Group15
 
                 return wins;
             }
+
+
+            public void Reset()
+            {
+                if (winnerCamp == ECampType.NONE)
+                {
+                    bestMove = 0;
+                    hasBestMove = false;
+                    wins = Vector2Int.zero;
+                }
+            }
         }
 
         #region Global Members
@@ -140,7 +152,7 @@ namespace Group15
             {
                 foreach (var move in result.moves)
                 {
-                    if (move.Value.Depth < Depth)
+                    if (move.Value.Depth < Depth && move.Value.Depth >= depth)
                         move.Value.ComputeDepth(depth, false);
                 }
                 return;
@@ -231,6 +243,30 @@ namespace Group15
                         EmptyPositions.Add(AIExtensions.GetPositionFromVector(x, y));
                     }
                 }
+            }
+        }
+
+        #endregion
+
+        #region Remap
+
+        private void Remap(int depth, bool origin)
+        {
+            if (Depth < depth - 2) return;
+
+            if (!visited[Camp].ContainsKey(State) && Depth == depth - 2)
+            {
+                Origin = origin;
+                Depth = depth;
+                visited[Camp].TryAdd(State, this);
+                result.Reset();
+            }
+            else
+            {
+                if (result.moves != null)
+                    foreach (var tree in result.moves.Values)
+                        if (tree.Depth < Depth)
+                            tree.Remap(depth, false);
             }
         }
 
@@ -393,6 +429,12 @@ namespace Group15
                 else
                 {
                     result.moves.TryAdd(move.Item1, new MoveTree(move.Item2, Camp.OppositeCamp(), !IsPlayer, Depth - 1));
+                    
+                }
+
+                if (Depth == MainDepth - 1)
+                {
+                    nextsTrees.TryAdd(move.Item2, result.moves[move.Item1]);
                 }
             }
         }
@@ -402,30 +444,55 @@ namespace Group15
         #region Static Accessor
 
         public enum Strategy { DEFENSE = 0, OFFENSE = 1, PROBA = 2 }
+        private static MoveTree current;
 
         private static Dictionary<ECampType, Dictionary<BoardState, MoveTree>> visited = new()
             {
                 { ECampType.PLAYER_ONE, new() }, { ECampType.PLAYER_TWO, new() }
             };
+        private static Dictionary<BoardState, MoveTree> nextsTrees = new();
+
+        private static int MainDepth { get; set; }
 
         public static NextMove GetBestMove(List<IPawn> state, ECampType camp, int depth, Strategy strategy)
         {
-            MoveTree moveTree = new MoveTree(new BoardState(state), camp, true, depth);
+            MainDepth = depth;
 
             visited[ECampType.PLAYER_ONE].Clear();
             visited[ECampType.PLAYER_TWO].Clear();
 
-            moveTree.ComputeDepth(depth, true);
-
-            if (moveTree.result.hasBestMove)
+            if (nextsTrees.TryGetValue(new BoardState(state), out current))
             {
-                Debug.Log("Has perfect move for winner " + moveTree.result.winnerCamp);
-                return moveTree.result.bestMove;
+                current.Remap(depth, true);
+                for (int i = depth - 1; i >= 0; i--)
+                {
+                    current.Remap(i, false);
+                }
+
+                foreach (var tree in visited[camp])
+                {
+                    if (tree.Value.Depth == depth - 2)
+                        nextsTrees.TryAdd(tree.Value.State, tree.Value);
+                }
+            }
+            else
+            {
+                current = new MoveTree(new BoardState(state), camp, true, depth);
+            }
+
+            nextsTrees.Clear();
+
+            current.ComputeDepth(depth, true);
+
+            if (current.result.hasBestMove)
+            {
+                Debug.Log("Has perfect move for winner " + current.result.winnerCamp);
+                return current.result.bestMove;
             }
 
             for (int i = depth - 1; i > 0; i--)
             {
-                moveTree.ComputeDepth(i, false);
+                current.ComputeDepth(i, false);
             }
 
             switch (strategy)
@@ -439,13 +506,13 @@ namespace Group15
             }
             for (int i = 0; i < depth; i++)
             {
-                moveTree.GetWins(i);
+                current.GetWins(i);
             }
 
-            moveTree.ComputeBestMove();
+            current.ComputeBestMove();
 
 
-            return moveTree.result.bestMove;
+            return current.result.bestMove;
 
 
             int DefensiveComparer(Vector2Int v1, Vector2Int v2)
